@@ -17,6 +17,14 @@ function FirstView() {
 		alert(e.source.text);
 	});
 	
+	// テスト
+	var rss = require('app/services/rss');
+	rss.loadRssFeed('http://4u-beautyimg.com/rss?page=1', {
+		success: function(data) {
+			Ti.API.info(data);
+		}
+	});
+	
 	return self;
 }
 
