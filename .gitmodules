@@ -1,0 +1,3 @@
+[submodule "jasmine-titanium"]
+	path = Resources/vendor/jasmine-titanium
+	url = git://github.com/sngmr/jasmine-titanium.git
