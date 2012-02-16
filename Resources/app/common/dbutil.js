@@ -16,10 +16,11 @@ function getDatabase() {
 			'CREATE TABLE feeds (' +
 				'id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,' +
 				'title TEXT,' +
-				'image TEXT,' +
+				'image_url TEXT,' +
 				'pubdate TEXT,'+
-				'filepath TEXT,' +
-				'orientation INTEGER' +
+				'filename TEXT,' +
+				'width INTEGER,' +
+				'height INTEGER' +
 			')'
 		);
 	}

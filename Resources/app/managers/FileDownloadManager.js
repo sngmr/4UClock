@@ -13,7 +13,7 @@ function start() {
 	for (var i = 0, len = rows.length; i < len; i++) {
 		_imageDataQueue.push({
 			id: rows[i].id,
-			image: rows[i].image,
+			image_url: rows[i].image_url,
 		});
 	}
 	
@@ -30,25 +30,37 @@ function _download() {
 	_imageData = _imageDataQueue.shift();
 	if (!_imageData) {
 		Ti.App.fireEvent(EVENT_COMPETE);
-		_fileDownloader = null;
 		return;
 	}
 	
-	_fileDownloader.download(_imageData.image, {
+	_fileDownloader.download(_imageData.image_url, {
 		success: _downloadSuccessHandler,
 		error: _downloadErrorHandler,
 	});
 }
 
-function _downloadSuccessHandler(filePath) {
+function _downloadSuccessHandler(fileName) {
+	var constant = require('app/common/constant');
 	var feed = new (require('app/models/Feed'))();
-	feed.updateFilePath(_imageData.id, filePath);
+	
+	// Check image orientation
+	var orientation = constant.ORIENTATION_UNKNOWN;
+	var imageFile = Ti.Filesystem.getFile(constant.IMAGE_FILE_DIR_NAME, fileName);
+	var imageBlob = imageFile.read();
+	var width = imageBlob.width;
+	var height = imageBlob.height;
+	imageBlob = null;
+	imageFile = null;
+	
+	feed.updateFileData(_imageData.id, fileName, width, height);
 	setTimeout(_download, 100);
 }
 
 function _downloadErrorHandler(errorMessage) {
-	// TODO Fix error handling
-	alert(errorMessage);
+	Ti.API.error('[FileDownloadManager]' + errorMessage);
+	
+	var feed = new (require('app/models/Feed'))();
+	feed.remove(_imageData.id);
 	setTimeout(_download, 100);
 }
 

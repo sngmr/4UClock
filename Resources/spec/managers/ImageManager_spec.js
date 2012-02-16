@@ -1,9 +1,10 @@
 describe("ImageManager", function() {
-	var manager, db;
+	var manager, db, saveDir;
 	
 	beforeEach(function() {
 		manager = require('app/managers/ImageManager');
 		db = require('app/common/dbutil').getDatabase();
+		saveDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
 	});
 	
 	it('Singleton test', function() {
@@ -32,8 +33,26 @@ describe("ImageManager", function() {
 			rs = db.execute('SELECT * FROM feeds');
 			expect(rs.rowCount).toBeGreaterThan(10);
 			
-			rs = db.execute("SELECT * FROM feeds WHERE filepath IS NOT NULL");
+			rs = db.execute("SELECT * FROM feeds WHERE filename IS NOT NULL");
 			expect(rs.rowCount).toBeGreaterThan(0);
+		});
+	});
+	
+	it('Get image model test', function() {
+		var ready = false;
+		
+		Ti.App.addEventListener(manager.EVENT_READY, function() { ready = true; });
+		manager.init();
+		
+		waitsFor(function() { return ready; }, 'Never finish async method.', 30000);
+		
+		runs(function() {
+			// At least 5 data can get
+			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
+			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
+			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
+			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
+			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
 		});
 	});
 });

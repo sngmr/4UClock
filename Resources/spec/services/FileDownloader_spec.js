@@ -1,9 +1,10 @@
 describe("downloader", function() {
-	var downloader;
+	var downloader, saveDir;
 	var url = 'http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg';
 	
 	beforeEach(function() {
 		downloader = new (require('app/services/FileDownloader'))();
+		saveDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
 	});
 	
 	// Private method test
@@ -35,12 +36,12 @@ describe("downloader", function() {
 	it('Download success', function() {
 		var _success = false;
 		var _error = false;
-		var _filePath;
+		var _fileName;
 		var _errorMsg;
 		
 		var callback = {
-			success: function(filePath) {
-				_filePath = filePath;
+			success: function(fileName) {
+				_fileName = fileName;
 				_success = true; 
 			},
 			error: function(errorMsg) {
@@ -53,19 +54,19 @@ describe("downloader", function() {
 		waitsFor(function() { return _success; }, 'Never finish async method.', 10000);
 		
 		runs(function() {
-			expect(Ti.Filesystem.getFile(_filePath).exists()).toBeTruthy();
+			expect(Ti.Filesystem.getFile(saveDir, _fileName).exists()).toBeTruthy();
 		});
 	});
 	
 	it('Download file not found', function() {
 		var _success = false;
 		var _error = false;
-		var _filePath;
+		var _fileName;
 		var _errorMsg;
 		
 		var callback = {
-			success: function(filePath) {
-				_filePath = filePath;
+			success: function(fileName) {
+				_fileName = fileName;
 				_success = true; 
 			},
 			error: function(errorMsg) {
@@ -85,12 +86,12 @@ describe("downloader", function() {
 	it('File extension error', function() {
 		var _success = false;
 		var _error = false;
-		var _filePath;
+		var _fileName;
 		var _errorMsg;
 		
 		var callback = {
-			success: function(filePath) {
-				_filePath = filePath;
+			success: function(fileName) {
+				_fileName = fileName;
 				_success = true; 
 			},
 			error: function(errorMsg) {

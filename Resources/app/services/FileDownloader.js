@@ -30,13 +30,13 @@ function FileDownloader() {
 		
 		// Setting HTTPClient
 		this.xhr.onload = function() {
-			if (this.status == 200) {
+			if (this.status == 200 && !this.responseData.text) {	// Check if the response is html
 				var saveFile = _createSaveFile(url);
 				saveFile.write(this.responseData);
-				if (o.success) { o.success(saveFile.nativePath); }		// Pass saved file path.
+				if (o.success) { o.success(saveFile.getName()); }	// Pass saved file name.
 				saveFile = null;
 			} else {
-				if (o.error) { o.error('HTTP status is something wrong'); }
+				if (o.error) { o.error('HTTP status OR response data is something wrong'); }
 			}
 		};
 		
