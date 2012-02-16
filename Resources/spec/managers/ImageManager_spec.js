@@ -18,17 +18,22 @@ describe("ImageManager", function() {
 		expect(mgr1).toBe(mgr2);
 	});
 	
-	/*
 	it('Init test', function(){
+		var ready = false;
 		
+		Ti.App.addEventListener(manager.EVENT_READY, function() { ready = true; });
 		manager.init();
 		
-		waitsFor(function() { return manager.isReady(); }, 'Never finish async method.', 30000);
+		waitsFor(function() { return ready; }, 'Never finish async method.', 30000);
 		
 		runs(function() {
-			var rs = db.execute('SELECT * FROM feeds');
+			var rs;
+			
+			rs = db.execute('SELECT * FROM feeds');
 			expect(rs.rowCount).toBeGreaterThan(10);
+			
+			rs = db.execute("SELECT * FROM feeds WHERE filepath IS NOT NULL");
+			expect(rs.rowCount).toBeGreaterThan(0);
 		});
 	});
-	*/
 });

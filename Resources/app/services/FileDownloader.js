@@ -17,8 +17,12 @@ function FileDownloader() {
 		}
 		
 		// Check url's extension
-		if (!_getFileExtension(url)) {
+		var extension = _getFileExtension(url);
+		if (!extension) {
 			if (o.error) o.error('Invalid file extension');
+			return;
+		} else if (!_checkFileExtension(extension)) {
+			if (o.error) o.error('Unsupported file extension');
 			return;
 		}
 		
@@ -55,9 +59,13 @@ function FileDownloader() {
 
 function _createSaveFile(url) {
 	var file;
-	var fileDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
+	var fileDirName = require('app/common/constant').IMAGE_FILE_DIR_NAME;
+	
+	var fileDir = Ti.Filesystem.getFile(fileDirName);
+	if (!fileDir.exists()) fileDir.createDirectory();
+	
 	while (true) {
-		file = Ti.Filesystem.getFile(fileDir, _getRandomString() + '.' + _getFileExtension(url));
+		file = Ti.Filesystem.getFile(fileDirName, _getRandomString() + '.' + _getFileExtension(url));
 		if (!file.exists()) break;
 	}
 	return file;
@@ -81,6 +89,10 @@ function _getFileExtension(url) {
 	var s = path[path.length - 1].split('.');
 	if (s.length < 2) return null;
 	return s[s.length - 1];
+}
+
+function _checkFileExtension(extension) {
+	return /^(jpg|jpeg|png)$/.test(extension);
 }
 
 // Export

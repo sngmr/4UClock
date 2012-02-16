@@ -9,6 +9,9 @@ function getDatabase() {
 		
 		// TODO Need to use old data
 		_db.execute('DROP TABLE IF EXISTS feeds;');
+		var imageDir = Ti.Filesystem.getFile(require('app/common/constant').IMAGE_FILE_DIR_NAME);
+		if (imageDir.exists()) imageDir.deleteDirectory(true);
+		
 		_db.execute(
 			'CREATE TABLE feeds (' +
 				'id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,' +
