@@ -4,6 +4,12 @@ describe("rss", function() {
 		rss = new (require('app/services/RssLoader'))();
 	});
 	
+	// Private method test
+	it('DateTime format', function() {
+		expect(_parseDate('Fri, 21 Oct 2011 12:26:24 +0900')).toEqual('20111021122624');
+		expect(_parseDate('Sat, 4 Feb 2012 01:04:03 +0900')).toEqual('20120204010403');
+	});
+	
 	it('Getting feed success', function() {
 		var receiveData;
 		var complete = false;

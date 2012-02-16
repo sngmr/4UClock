@@ -30,6 +30,7 @@ function FileDownloader() {
 				var saveFile = _createSaveFile(url);
 				saveFile.write(this.responseData);
 				if (o.success) { o.success(saveFile.nativePath); }		// Pass saved file path.
+				saveFile = null;
 			} else {
 				if (o.error) { o.error('HTTP status is something wrong'); }
 			}

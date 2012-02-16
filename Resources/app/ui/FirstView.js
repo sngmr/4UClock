@@ -17,18 +17,25 @@ function FirstView() {
 		alert(e.source.text);
 	});
 	
+	//
 	// TEST
-	var downloader = new (require('app/services/FileDownloader'))();
+	//
+	var imageManager = require('app/managers/ImageManager');
+	imageManager.init();
 	
-	var callback = {
-		success: function(filePath) {
-			self.backgroundImage = filePath;
-		},
-		error: function(errorMsg) {
-			alert(errorMsg);
-		},
-	};
-	downloader.download('http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg.HOGEHOGE', callback);
+	// var rss = new (require('app/services/RssLoader'))();
+	// rss.load('http://4u-beautyimg.com/rss', {});
+// 	
+	// var downloader = new (require('app/services/FileDownloader'))();
+	// var callback = {
+		// success: function(filePath) {
+			// self.backgroundImage = filePath;
+		// },
+		// error: function(errorMsg) {
+			// alert(errorMsg);
+		// },
+	// };
+	// downloader.download('http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg', callback);
 	
 	return self;
 }

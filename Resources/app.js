@@ -1,7 +1,4 @@
 /**
  * Let's roll!!
  */
-(function() {
-	var ApplicationWindow = require('app/ui/ApplicationWindow');
-	new ApplicationWindow().open();
-})();
+new (require('app/ui/ApplicationWindow'))().open();
