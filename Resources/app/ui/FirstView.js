@@ -17,13 +17,18 @@ function FirstView() {
 		alert(e.source.text);
 	});
 	
-	// テスト
-	var rss = require('app/services/rss');
-	rss.loadRssFeed('http://4u-beautyimg.com/rss?page=1', {
-		success: function(data) {
-			Ti.API.info(data);
-		}
-	});
+	// TEST
+	var downloader = new (require('app/services/FileDownloader'))();
+	
+	var callback = {
+		success: function(filePath) {
+			self.backgroundImage = filePath;
+		},
+		error: function(errorMsg) {
+			alert(errorMsg);
+		},
+	};
+	downloader.download('http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg.HOGEHOGE', callback);
 	
 	return self;
 }
