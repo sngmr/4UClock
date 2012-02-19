@@ -15,7 +15,7 @@ function Feed() {
 			return _select('SELECT * FROM feeds WHERE filename IS NOT NULL ORDER BY id');
 		}
 	}
-	// TODO Woops... pubdate is NOT trust...
+	// TODO Woops... pubdate is NOT trusted sort key field... It's messy.
 	// this.selectDisplay = function(pubdate) {
 		// if (pubdate) {
 			// return _select('SELECT * FROM feeds WHERE filename IS NOT NULL AND pubdate < ? ORDER BY pubdate DESC', pubdate);
