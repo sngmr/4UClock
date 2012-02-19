@@ -8,6 +8,8 @@ function start() {
 	_imageDataQueue = [];
 	_imageData = null;
 	
+	var that = this;
+	
 	var feed = new (require('app/models/Feed'))();
 	var rows = feed.selectUndownload();
 	for (var i = 0, len = rows.length; i < len; i++) {
@@ -18,7 +20,9 @@ function start() {
 	}
 	
 	if (rows.length > 0) {
-		if (!_fileDownloader) _fileDownloader = new (require('app/services/FileDownloader'))();
+		if (!_fileDownloader) {
+			_fileDownloader = new (require('app/services/FileDownloader'))();
+		}
 		_download();
 		return true;
 	} else {

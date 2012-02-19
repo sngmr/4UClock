@@ -3,7 +3,8 @@
  */
 function RssLoader() {
 	this.xhr = Ti.Network.createHTTPClient();
-	this.xhr.timeout = 2500;
+	this.xhr.timeout = require('app/common/constant').TIMEOUT_RSS_DOWNLOAD;
+	var common = require('app/common/common');
 	
 	/**
 	 * Send
@@ -12,11 +13,15 @@ function RssLoader() {
 		this.xhr.abort();
 		
 		if (!Ti.Network.online) {
-			if (o.error) o.error('No connection');
+			_callOnError(o, 'No connection');
 			return;
 		}
 		
-		// TODO: Validate url
+		// Validate url
+		if (!common.isUrl(url)) {
+			_callOnError(o, 'Invalid url');
+			return;
+		}
 		
 		// Setting HTTPClient
 		this.xhr.onload = function() {
@@ -31,45 +36,33 @@ function RssLoader() {
 					// Now I decide to download "media:content", but if it will happen a log of error,
 					// change to "media:thumbnail" tab and replace "/m/m_" to "/l/l_".
 					image_url: item.getElementsByTagName('media:content').item(0).getAttribute('url'),
-					pubdate: _parseDate(item.getElementsByTagName('pubDate').item(0).text),
+					pubdate: common.getYYYYMMDDHHMMSS(item.getElementsByTagName('pubDate').item(0).text),
 				});
 			}
 			
-			if (o.success) o.success(data);		// Pass data.
+			if (o.success) {
+				o.success(data);	// Pass data.
+			}
 		};
 		
 		this.xhr.onerror = function(error) {
-			if (o.error) o.error(error.error);	// Pass error message.
+			_callOnError(o, error.error);	// Pass error message.
 		};
 		
 		// Go
-		if (o.start) { o.start(); }
+		if (o.start) {
+			o.start();
+		}
 		this.xhr.open('GET', url);
 		this.xhr.send();
 	};
 };
 
-function _parseDate(dateStr) {
-	var date;
-	
-	try {
-		date = new Date(dateStr);
-	} catch (e) {
-		date = new Date();
+function _callOnError(o, errorMessage) {
+	if (o.error && typeof o.error === 'function') {
+		o.error(errorMessage);
 	}
-	
-	var year = date.getFullYear();
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-	var hour = date.getHours();
-	var minute = date.getMinutes();
-	var second = date.getSeconds();
-	var twoFn = function(str) {
-		return (str + '').length == 1 ? '0' + (str + '') : (str + '');
-	}
-	
-	return year + twoFn(month) + twoFn(day) + twoFn(hour) + twoFn(minute) + twoFn(second);
-};
+}
 
 // Export
 module.exports = RssLoader;

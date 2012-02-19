@@ -3,14 +3,17 @@
  */
 function main() {
 	// Global Settings
-	Ti.App.idleTimerDisabled = true;
-	Ti.UI.backgroundColor = '#000000';
+	Titanium.App.idleTimerDisabled = true;
+	Titanium.UI.backgroundColor = '#000000';
 	
 	// Let's roll
 	var win;
-	Titanium.App.addEventListener(require('app/managers/ImageManager').EVENT_READY, function() {
+	var completeEvent = require('app/managers/imageManager').EVENT_COMPLETE;
+	var imageManagerReadyHandler = function(e) {
 		win.open();
-	});
+		Titanium.App.removeEventListener(completeEvent, imageManagerReadyHandler);
+	};
+	Titanium.App.addEventListener(completeEvent, imageManagerReadyHandler);
 	win = new (require('app/ui/ClockWindow'))();
 }
 

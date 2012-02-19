@@ -68,15 +68,13 @@ function _changeImage() {
 	_imageView.setImage(Titanium.Filesystem.getFile(require('app/common/constant').IMAGE_FILE_DIR_NAME, data.filename).nativePath);
 }
 
-// TODO Below is awful code... Sooooo sleepy
 function _getTime() {
+	var common = require('app/common/common');
 	var date = new Date();
 	var hour = date.getHours();
 	var minute = date.getMinutes();
-	var twoFn = function(str) {
-		return (str + '').length == 1 ? '0' + (str + '') : (str + '');
-	}
-	return twoFn(hour) + ':' + twoFn(minute);
+	
+	return common.twoZeroPadding(hour) + ':' + common.twoZeroPadding(minute);
 }
 
 function _timerHadler() {

@@ -3,7 +3,7 @@
  * 	This object should be acted as like a singleton model.
  * 	Don't create with new!! It cause script error!!
  */
-var EVENT_READY = 'app:imageManager:ready';
+var EVENT_COMPLETE = 'app:imageManager:complete';
 var _readPage, _rssLoader, _feedQueue, _inDownload;
 
 function init() {
@@ -23,11 +23,12 @@ function getNext() {
 	var data = _feedQueue.shift();
 	
 	Ti.API.info('[imageManager]Queue length = ' + _feedQueue.length);
-	if (_feedQueue.length <= 5 && !_inDownload) {
+	if (_feedQueue.length <= 10 && !_inDownload) {
 		_readPage++;
 		setTimeout(_loadRss, 100);
 	}
 	
+	// TODO Need implementation if there is no data
 	return data;
 }
 
@@ -93,10 +94,10 @@ function _fileDownloadManagerCompleteHandler() {
 	Ti.API.info('[imageManager]fileDownloadManager Complete Queue Count = ' + _feedQueue.length);
 	
 	_inDownload = false;
-	Ti.App.fireEvent(EVENT_READY);
+	Ti.App.fireEvent(EVENT_COMPLETE);
 }
 
 // Export
 exports.init = init;
 exports.getNext = getNext;
-exports.EVENT_READY = EVENT_READY;
+exports.EVENT_COMPLETE = EVENT_COMPLETE;

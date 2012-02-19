@@ -1,36 +1,10 @@
-describe("downloader", function() {
+describe("FileDownloader", function() {
 	var downloader, saveDir;
 	var url = 'http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg';
 	
 	beforeEach(function() {
 		downloader = new (require('app/services/FileDownloader'))();
 		saveDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
-	});
-	
-	// Private method test
-	it('Check random string', function() {
-		var str, firstChar;
-		for (var i = 0; i < 10000; i++) {
-			str = _getRandomString();
-			expect(/^[a-zA-Z][a-zA-Z0-9]{31}$/.test(str)).toBeTruthy();
-		}
-	});
-	
-	it('Check get file extension', function() {
-		expect(_getFileExtension('hoge.xls')).toEqual('xls');
-		expect(_getFileExtension(url)).toEqual('jpg');
-		expect(_getFileExtension('hogehoge')).toEqual(null);
-		expect(_getFileExtension('')).toEqual(null);
-		expect(_getFileExtension(null)).toEqual(null);
-	});
-	
-	it('Check test file extension', function() {
-		expect(_checkFileExtension('jpg')).toBeTruthy();
-		expect(_checkFileExtension('jpeg')).toBeTruthy();
-		expect(_checkFileExtension('png')).toBeTruthy();
-		expect(_checkFileExtension()).toBeFalsy();
-		expect(_checkFileExtension('gif')).toBeFalsy();
-		expect(_checkFileExtension('hoge.png?hogehoge')).toBeFalsy();
 	});
 	
 	it('Download success', function() {
@@ -55,6 +29,31 @@ describe("downloader", function() {
 		
 		runs(function() {
 			expect(Ti.Filesystem.getFile(saveDir, _fileName).exists()).toBeTruthy();
+		});
+	});
+	
+	it('Invalid url', function() {
+		var _success = false;
+		var _error = false;
+		var _fileName;
+		var _errorMsg;
+		
+		var callback = {
+			success: function(fileName) {
+				_fileName = fileName;
+				_success = true; 
+			},
+			error: function(errorMsg) {
+				_errorMsg = errorMsg;
+				_error = true;
+			},
+		};
+		downloader.download('hogehoge', callback);
+		
+		waitsFor(function() { return _error; }, 'Never finish async method.', 10000);
+		
+		runs(function() {
+			expect(_errorMsg).toEqual('Invalid url');
 		});
 	});
 	

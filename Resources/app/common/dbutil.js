@@ -3,14 +3,16 @@
  */
 var _db;
 
-function getDatabase() {
+exports.getDatabase = function() {
 	if (!_db) {
 		_db = Ti.Database.install('empty.sql', require('app/common/constant').DB_NAME);
 		
 		// TODO Need to use old data
 		_db.execute('DROP TABLE IF EXISTS feeds;');
 		var imageDir = Ti.Filesystem.getFile(require('app/common/constant').IMAGE_FILE_DIR_NAME);
-		if (imageDir.exists()) imageDir.deleteDirectory(true);
+		if (imageDir.exists()) {
+			imageDir.deleteDirectory(true);
+		}
 		
 		_db.execute(
 			'CREATE TABLE feeds (' +
@@ -26,6 +28,3 @@ function getDatabase() {
 	}
 	return _db;
 }
-
-// Export
-exports.getDatabase = getDatabase;

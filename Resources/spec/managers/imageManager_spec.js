@@ -22,7 +22,7 @@ describe("ImageManager", function() {
 	it('Init test', function(){
 		var ready = false;
 		
-		Ti.App.addEventListener(manager.EVENT_READY, function() { ready = true; });
+		Ti.App.addEventListener(manager.EVENT_COMPLETE, function() { ready = true; });
 		manager.init();
 		
 		waitsFor(function() { return ready; }, 'Never finish async method.', 30000);
@@ -41,7 +41,7 @@ describe("ImageManager", function() {
 	it('Get image model test', function() {
 		var ready = false;
 		
-		Ti.App.addEventListener(manager.EVENT_READY, function() { ready = true; });
+		Ti.App.addEventListener(manager.EVENT_COMPLETE, function() { ready = true; });
 		manager.init();
 		
 		waitsFor(function() { return ready; }, 'Never finish async method.', 30000);
