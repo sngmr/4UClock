@@ -32,9 +32,11 @@ describe("ImageManager", function() {
 			
 			rs = db.execute('SELECT * FROM feeds');
 			expect(rs.rowCount).toBeGreaterThan(10);
+			rs.close();
 			
 			rs = db.execute("SELECT * FROM feeds WHERE filename IS NOT NULL");
 			expect(rs.rowCount).toBeGreaterThan(0);
+			rs.close();
 		});
 	});
 	

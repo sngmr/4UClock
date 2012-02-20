@@ -61,6 +61,7 @@ function Feed() {
 			rows.push(row);
 			rs.next();
 		}
+		rs.close();
 		return rows;
 	}
 }

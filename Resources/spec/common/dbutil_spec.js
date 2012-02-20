@@ -14,5 +14,6 @@ describe('dbutil', function() {
 		var rs = db.execute('SELECT * FROM feeds');
 		expect(rs).toBeDefined();
 		expect(rs.rowCount).toBeGreaterThan(-1);
+		rs.close();
 	});
 });
