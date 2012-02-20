@@ -1,7 +1,7 @@
 describe("rss", function() {
 	var rss;
 	beforeEach(function() {
-		rss = new (require('app/services/RssLoader'))();
+		rss = new (require('/app/services/RssLoader'))();
 	});
 	
 	it('Getting feed success', function() {

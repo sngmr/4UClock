@@ -1,7 +1,7 @@
 describe('common', function() {
 	var common;
 	beforeEach(function() {
-		common = require('app/common/common');
+		common = require('/app/common/common');
 	});
 	
 	it('isUrl', function() {

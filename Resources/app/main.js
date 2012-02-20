@@ -8,13 +8,13 @@ function main() {
 	
 	// Let's roll
 	var win;
-	var completeEvent = require('app/managers/imageManager').EVENT_COMPLETE;
+	var completeEvent = require('/app/managers/imageManager').EVENT_COMPLETE;
 	var imageManagerReadyHandler = function(e) {
 		win.open();
 		Titanium.App.removeEventListener(completeEvent, imageManagerReadyHandler);
 	};
 	Titanium.App.addEventListener(completeEvent, imageManagerReadyHandler);
-	win = new (require('app/ui/ClockWindow'))();
+	win = new (require('/app/ui/ClockWindow'))();
 }
 
 // Export

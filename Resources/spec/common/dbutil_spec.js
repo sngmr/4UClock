@@ -1,12 +1,12 @@
 describe('dbutil', function() {
 	var dbutil;
 	beforeEach(function() {
-		dbUtil = require('app/common/dbutil');
+		dbUtil = require('/app/common/dbutil');
 	});
 	
 	it('Get database', function() {
 		var db = dbUtil.getDatabase();
-		expect(db.getName()).toEqual(require('app/common/constant').DB_NAME);
+		expect(db.getName()).toEqual(require('/app/common/constant').DB_NAME);
 	});
 	
 	it('Check database', function() {

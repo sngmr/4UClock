@@ -3,8 +3,8 @@ describe("FileDownloader", function() {
 	var url = 'http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg';
 	
 	beforeEach(function() {
-		downloader = new (require('app/services/FileDownloader'))();
-		saveDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
+		downloader = new (require('/app/services/FileDownloader'))();
+		saveDir = require('/app/common/constant').IMAGE_FILE_DIR_NAME;
 	});
 	
 	it('Download success', function() {

@@ -2,7 +2,7 @@
  * Feed model
  */
 function Feed() {
-	var _db = require('app/common/dbutil').getDatabase();
+	var _db = require('/app/common/dbutil').getDatabase();
 	
 	this.selectAll = function() {
 		return _select('SELECT * FROM feeds ORDER BY id');

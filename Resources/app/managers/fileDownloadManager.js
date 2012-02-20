@@ -10,7 +10,7 @@ function start() {
 	
 	var that = this;
 	
-	var feed = new (require('app/models/Feed'))();
+	var feed = new (require('/app/models/Feed'))();
 	var rows = feed.selectUndownload();
 	for (var i = 0, len = rows.length; i < len; i++) {
 		_imageDataQueue.push({
@@ -21,7 +21,7 @@ function start() {
 	
 	if (rows.length > 0) {
 		if (!_fileDownloader) {
-			_fileDownloader = new (require('app/services/FileDownloader'))();
+			_fileDownloader = new (require('/app/services/FileDownloader'))();
 		}
 		_download();
 		return true;
@@ -44,8 +44,8 @@ function _download() {
 }
 
 function _downloadSuccessHandler(fileName) {
-	var constant = require('app/common/constant');
-	var feed = new (require('app/models/Feed'))();
+	var constant = require('/app/common/constant');
+	var feed = new (require('/app/models/Feed'))();
 	
 	// Check image orientation
 	var orientation = constant.ORIENTATION_UNKNOWN;
@@ -63,7 +63,7 @@ function _downloadSuccessHandler(fileName) {
 function _downloadErrorHandler(errorMessage) {
 	Ti.API.error('[fileDownloadManager]' + errorMessage);
 	
-	var feed = new (require('app/models/Feed'))();
+	var feed = new (require('/app/models/Feed'))();
 	feed.remove(_imageData.id);
 	setTimeout(_download, 100);
 }

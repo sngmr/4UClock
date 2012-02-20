@@ -1,7 +1,7 @@
 describe('Feed', function() {
 	var db;
 	beforeEach(function() {
-		db = require('app/common/dbutil').getDatabase();
+		db = require('/app/common/dbutil').getDatabase();
 		db.execute('DELETE FROM feeds');
 	});
 	afterEach(function() {
@@ -9,12 +9,12 @@ describe('Feed', function() {
 	});
 	
 	it('Private value visibility test', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		expect(feed._db).toBeUndefined();
 	});
 	
 	it('selectAll', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		db.execute("INSERT INTO feeds VALUES (null,'title1','image1','20120101','filepath1',0, 0)");
 		db.execute("INSERT INTO feeds VALUES (null,'title2','image2','20120102','filepath2',0, 0)");
@@ -28,7 +28,7 @@ describe('Feed', function() {
 	});
 	
 	it('selectDisplay with no arguments', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		db.execute("INSERT INTO feeds VALUES (null,'title1','image1','20120101','filepath1',0, 0)");
 		db.execute("INSERT INTO feeds VALUES (null,'title2','image2','20120102',NULL,0, 0)");
@@ -43,7 +43,7 @@ describe('Feed', function() {
 	});
 	
 	it('selectDisplay with arguments', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		db.execute("INSERT INTO feeds VALUES (1,'title1','image1','20120101','filepath1',0, 0)");
 		db.execute("INSERT INTO feeds VALUES (2,'title2','image2','20120102',NULL,0, 0)");
@@ -57,7 +57,7 @@ describe('Feed', function() {
 	});
 	
 	it('selectUndownload', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		db.execute("INSERT INTO feeds VALUES (null,'title1','image1','20120101',NULL,0, 0)");
 		db.execute("INSERT INTO feeds VALUES (null,'title2','image2','20120102','filepath2',0, 0)");
@@ -70,7 +70,7 @@ describe('Feed', function() {
 	});
 	
 	it('insert', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		var count = feed.insert([null, 'title1', 'image1', 'pubdate1', 'filepath1', 0, 0]);
 		expect(count).toEqual(1);
@@ -84,7 +84,7 @@ describe('Feed', function() {
 	});
 	
 	it('updateFileData', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		db.execute("INSERT INTO feeds VALUES (null,'title1','image1','20120101',NULL,0,0)");
 		
@@ -102,7 +102,7 @@ describe('Feed', function() {
 	});
 	
 	it('remove', function() {
-		var feed = new (require('app/models/Feed'))();
+		var feed = new (require('/app/models/Feed'))();
 		
 		db.execute("INSERT INTO feeds VALUES (1,'title1','image1','20120101',NULL,0,0)");
 		

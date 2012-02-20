@@ -8,12 +8,12 @@ var _readPage, _rssLoader, _feedQueue, _inDownload;
 
 function init() {
 	_readPage = 1;
-	_rssLoader = new (require('app/services/RssLoader'))();
+	_rssLoader = new (require('/app/services/RssLoader'))();
 	_feedQueue = [];
 	_inDownload = false;
 	
 	Ti.App.addEventListener(
-		require('app/managers/fileDownloadManager').EVENT_COMPLETE,
+		require('/app/managers/fileDownloadManager').EVENT_COMPLETE,
 		_fileDownloadManagerCompleteHandler);
 	
 	_loadRss();
@@ -35,7 +35,7 @@ function getNext() {
 function _loadRss() {
 	_inDownload = true;
 	
-	var url = require('app/common/constant').RSS_FEEDS_BASE_URL + _readPage;
+	var url = require('/app/common/constant').RSS_FEEDS_BASE_URL + _readPage;
 	_rssLoader.load(
 		url,
 		{
@@ -49,7 +49,7 @@ function _loadRss() {
 
 function _rssLoaderSuccessHandler(feedsData) {
 	var rowData;
-	var feed = new (require('app/models/Feed'))();
+	var feed = new (require('/app/models/Feed'))();
 	
 	for (var i = 0, len = feedsData.length; i < len; i++) {
 		rowData = [null, feedsData[i].title, feedsData[i].image_url, feedsData[i].pubdate, null, 0, 0];
@@ -66,7 +66,7 @@ function _rssLoaderErrorHandler(errorMessage) {
 }
 
 function _downloadImage() {
-	require('app/managers/fileDownloadManager').start();
+	require('/app/managers/fileDownloadManager').start();
 }
 
 function _fileDownloadManagerCompleteHandler() {
@@ -84,7 +84,7 @@ function _fileDownloadManagerCompleteHandler() {
 		// Ti.API.info('[imageManager]Last pubdate is = ' + lastPubdate);
 	// }
 	
-	var feed = new (require('app/models/Feed'))();
+	var feed = new (require('/app/models/Feed'))();
 	var rows = feed.selectDisplay(lastId);
 	// var rows = feed.selectDisplay(lastPubdate);
 	for (var i = 0, len = rows.length; i < len; i++) {

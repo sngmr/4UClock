@@ -43,7 +43,7 @@ function ClockWindow() {
 	_self.add(container);
 	
 	// Execute when ImageManager get ready
-	_imageManager = require('app/managers/imageManager');
+	_imageManager = require('/app/managers/imageManager');
 	Titanium.App.addEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
 	_imageManager.init();
 	
@@ -66,7 +66,7 @@ function _changeImage() {
 		Titanium.API.error('[ClockWindow]Woops!! ImageManager dose NOT have next image!!! I am waiting...');
 		return;
 	}
-	_imageView.setImage(Titanium.Filesystem.getFile(require('app/common/constant').IMAGE_FILE_DIR_NAME, data.filename).nativePath);
+	_imageView.setImage(Titanium.Filesystem.getFile(require('/app/common/constant').IMAGE_FILE_DIR_NAME, data.filename).nativePath);
 }
 
 function _startClockTimer() {
@@ -80,7 +80,7 @@ function _timerHadler() {
 }
 
 function _getTime() {
-	var common = require('app/common/common');
+	var common = require('/app/common/common');
 	var date = new Date();
 	var hour = date.getHours();
 	var minute = date.getMinutes();
