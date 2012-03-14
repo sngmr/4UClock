@@ -2,14 +2,14 @@ describe("ImageManager", function() {
 	var manager, db, saveDir;
 	
 	beforeEach(function() {
-		manager = require('app/managers/imageManager');
-		db = require('app/common/dbutil').getDatabase();
-		saveDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
+		manager = require('/app/managers/imageManager');
+		db = require('/app/common/dbutil').getDatabase();
+		saveDir = require('/app/common/constant').IMAGE_FILE_DIR_NAME;
 	});
 	
 	it('Singleton test', function() {
-		var mgr1 = require('app/managers/imageManager');
-		var mgr2 = require('app/managers/imageManager');
+		var mgr1 = require('/app/managers/imageManager');
+		var mgr2 = require('/app/managers/imageManager');
 		
 		// Check the private value is not public
 		expect(mgr1._readPage).toBeUndefined();
@@ -32,9 +32,11 @@ describe("ImageManager", function() {
 			
 			rs = db.execute('SELECT * FROM feeds');
 			expect(rs.rowCount).toBeGreaterThan(10);
+			rs.close();
 			
 			rs = db.execute("SELECT * FROM feeds WHERE filename IS NOT NULL");
 			expect(rs.rowCount).toBeGreaterThan(0);
+			rs.close();
 		});
 	});
 	

@@ -3,8 +3,8 @@
  */
 function RssLoader() {
 	this.xhr = Ti.Network.createHTTPClient();
-	this.xhr.timeout = require('app/common/constant').TIMEOUT_RSS_DOWNLOAD;
-	var common = require('app/common/common');
+	this.xhr.timeout = require('/app/common/constant').TIMEOUT_RSS_DOWNLOAD;
+	var common = require('/app/common/common');
 	
 	/**
 	 * Send

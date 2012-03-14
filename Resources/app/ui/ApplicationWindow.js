@@ -3,7 +3,7 @@
  */
 function ApplicationWindow() {
 	//load component dependencies
-	var FirstView = require('app/ui/FirstView');
+	var FirstView = require('/app/ui/FirstView');
 		
 	//create component instance
 	var self = Ti.UI.createWindow({

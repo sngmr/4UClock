@@ -1,11 +1,11 @@
 /**
  * File downloader from internet
  */
-var common = require('app/common/common');
+var common = require('/app/common/common');
 
 function FileDownloader() {
 	this.xhr = Ti.Network.createHTTPClient();
-	this.xhr.timeout = require('app/common/constant').TIMEOUT_FILE_DOWNLOAD;
+	this.xhr.timeout = require('/app/common/constant').TIMEOUT_FILE_DOWNLOAD;
 	
 	/**
 	 * Send
@@ -68,7 +68,7 @@ function FileDownloader() {
 
 function _createSaveFile(url) {
 	var file;
-	var fileDirName = require('app/common/constant').IMAGE_FILE_DIR_NAME;
+	var fileDirName = require('/app/common/constant').IMAGE_FILE_DIR_NAME;
 	
 	var fileDir = Ti.Filesystem.getFile(fileDirName);
 	if (!fileDir.exists()) {

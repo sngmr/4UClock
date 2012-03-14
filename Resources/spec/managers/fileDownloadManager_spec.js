@@ -2,18 +2,18 @@ describe("FileDownloadManager", function() {
 	var manager, db, saveDir;
 	
 	beforeEach(function() {
-		manager = require('app/managers/fileDownloadManager');
-		db = require('app/common/dbutil').getDatabase();
+		manager = require('/app/managers/fileDownloadManager');
+		db = require('/app/common/dbutil').getDatabase();
 		db.execute('DELETE FROM feeds');
-		saveDir = require('app/common/constant').IMAGE_FILE_DIR_NAME;
+		saveDir = require('/app/common/constant').IMAGE_FILE_DIR_NAME;
 	});
 	afterEach(function() {
 		db.execute('DELETE FROM feeds');
 	});
 	
 	it('Singleton test', function() {
-		var mgr1 = require('app/managers/fileDownloadManager');
-		var mgr2 = require('app/managers/fileDownloadManager');
+		var mgr1 = require('/app/managers/fileDownloadManager');
+		var mgr2 = require('/app/managers/fileDownloadManager');
 		
 		// Check the private value is not public
 		expect(mgr1.rssLoader).toBeUndefined();
@@ -37,7 +37,7 @@ describe("FileDownloadManager", function() {
 		waitsFor(function() { return complete; }, 'Never finish async method.', 30000);
 		
 		runs(function() {
-			var feed = new (require('app/models/Feed'))();
+			var feed = new (require('/app/models/Feed'))();
 			var rows = feed.selectAll();
 			expect(Ti.Filesystem.getFile(saveDir, rows[0].filename).exists()).toBeTruthy();
 		});
@@ -55,7 +55,7 @@ describe("FileDownloadManager", function() {
 		waitsFor(function() { return complete; }, 'Never finish async method.', 30000);
 		
 		runs(function() {
-			var feed = new (require('app/models/Feed'))();
+			var feed = new (require('/app/models/Feed'))();
 			var rows = feed.selectAll();
 			expect(Ti.Filesystem.getFile(saveDir, rows[0].filename).exists()).toBeTruthy();
 			expect(Ti.Filesystem.getFile(saveDir, rows[2].filename).exists()).toBeTruthy();
