@@ -5,32 +5,32 @@ var _self, _imageManager, _imageView, _clockLabel;
 
 function ClockWindow() {
 	// Setting UI components
-	_self = Titanium.UI.createWindow({
+	_self = Ti.UI.createWindow({
 		fullscreen: true,
 		navBarHidden: true,
 		exitOnClose: true,
-		orientationModes: [Titanium.UI.PORTRAIT],
+		orientationModes: [Ti.UI.PORTRAIT],
 	});
 	
-	var container = Titanium.UI.createView({
+	var container = Ti.UI.createView({
 		width: '100%',
 		height: '100%',
 	});
 	
-	_imageView = Titanium.UI.createImageView({
+	_imageView = Ti.UI.createImageView({
 		width: '100%',
 		height: '100%',
 	});
 	container.add(_imageView);
 	
-	var header = Titanium.UI.createView({
+	var header = Ti.UI.createView({
 		width: '100%',
 		height: 'auto',
 		top: 0,
 		backgroundColor: '#000000',
 		opacity: 0.35,
 	});
-	_clockLabel = Titanium.UI.createLabel({
+	_clockLabel = Ti.UI.createLabel({
 		text: '',
 		width: '100%',
 		textAlign: 'center',
@@ -44,12 +44,12 @@ function ClockWindow() {
 	
 	// Execute when ImageManager get ready
 	_imageManager = require('/app/managers/imageManager');
-	Titanium.App.addEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
+	Ti.App.addEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
 	_imageManager.init();
 	
 	// Event listener on doble tap and shake
 	_imageView.addEventListener('doubletap', _imageDoubleTapHander);
-	Titanium.Gesture.addEventListener('shake', _shakeHandler);
+	Ti.Gesture.addEventListener('shake', _shakeHandler);
 	
 	// Start timer for change clock and image
 	// TODO Ummmmh. It's not good for the clock. Need to change.
@@ -63,10 +63,10 @@ function ClockWindow() {
 function _changeImage() {
 	var data = _imageManager.getNext();
 	if (!data) {
-		Titanium.API.error('[ClockWindow]Woops!! ImageManager dose NOT have next image!!! I am waiting...');
+		Ti.API.error('[ClockWindow]Woops!! ImageManager dose NOT have next image!!! I am waiting...');
 		return;
 	}
-	_imageView.setImage(Titanium.Filesystem.getFile(require('/app/common/constant').IMAGE_FILE_DIR_NAME, data.filename).nativePath);
+	_imageView.setImage(Ti.Filesystem.getFile(require('/app/common/constant').IMAGE_FILE_DIR_NAME, data.filename).nativePath);
 }
 
 function _startClockTimer() {
@@ -89,7 +89,7 @@ function _getTime() {
 }
 
 function _imageManagerReadyHandler() {
-	Titanium.App.removeEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
+	Ti.App.removeEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
 	_changeImage();
 }
 

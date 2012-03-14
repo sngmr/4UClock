@@ -5,6 +5,12 @@ describe("ImageManager", function() {
 		manager = require('/app/managers/imageManager');
 		db = require('/app/common/dbutil').getDatabase();
 		saveDir = require('/app/common/constant').IMAGE_FILE_DIR_NAME;
+		
+		db.execute('DELETE FROM feeds');
+		var dir = Ti.Filesystem.getFile(saveDir);
+		if (dir.exists()) {
+			dir.deleteDirectory(true);
+		}
 	});
 	
 	it('Singleton test', function() {
@@ -55,6 +61,34 @@ describe("ImageManager", function() {
 			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
 			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
 			expect(Titanium.Filesystem.getFile(saveDir, manager.getNext().filename).exists()).toBeTruthy();
+		});
+	});
+	
+	it('Check no duplicate data', function() {
+		var ready = false;
+		var recordCount = 0;
+		var rs;
+		
+		Ti.App.addEventListener(manager.EVENT_COMPLETE, function() { ready = true; });
+		manager.init();
+		
+		waitsFor(function() { return ready; }, 'Never finish async method part1.', 30000);
+		
+		runs(function() {
+			// Get record count for duplicate check
+			rs = db.execute('SELECT * FROM feeds');
+			recordCount = rs.rowCount;
+			
+			// init agein
+			ready = false;
+			manager.init();
+			
+			waitsFor(function() { return ready; }, 'Never finish async method part2.', 30000);
+			
+			runs(function() {
+				rs = db.execute('SELECT * FROM feeds');
+				expect(rs.rowCount).toEqual(recordCount);
+			});
 		});
 	});
 });

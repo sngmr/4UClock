@@ -13,6 +13,40 @@ describe('Feed', function() {
 		expect(feed._db).toBeUndefined();
 	});
 	
+	it('select', function() {
+		var feed = new (require('/app/models/Feed'))();
+		
+		db.execute("INSERT INTO feeds VALUES (1,'title1','image1','20120101','filepath1',0, 0)");
+		db.execute("INSERT INTO feeds VALUES (2,'title2','image2','20120102','filepath2',0, 0)");
+		
+		var row = feed.select(1);
+		
+		expect(row.title).toEqual('title1');
+		expect(row.image_url).toEqual('image1');
+		expect(row.pubdate).toEqual('20120101');
+		
+		var row = feed.select(999);
+		
+		expect(row).toEqual(null);
+	});
+	
+	it('selectByImageUrl', function() {
+		var feed = new (require('/app/models/Feed'))();
+		
+		db.execute("INSERT INTO feeds VALUES (1,'title1','image1','20120101','filepath1',0, 0)");
+		db.execute("INSERT INTO feeds VALUES (2,'title2','image2','20120102','filepath2',0, 0)");
+		
+		var row = feed.selectByImageUrl('image1');
+		
+		expect(row.title).toEqual('title1');
+		expect(row.image_url).toEqual('image1');
+		expect(row.pubdate).toEqual('20120101');
+		
+		var row = feed.selectByImageUrl('imageXXX');
+		
+		expect(row).toEqual(null);
+	});
+	
 	it('selectAll', function() {
 		var feed = new (require('/app/models/Feed'))();
 		
@@ -37,9 +71,9 @@ describe('Feed', function() {
 		var rows = feed.selectDisplay();
 		
 		expect(rows.length).toEqual(2);
-		expect(rows[0].title).toEqual('title1');
-		expect(rows[1].image_url).toEqual('image3');
-		expect(rows[0].pubdate).toEqual('20120101');
+		expect(rows[0].title).toEqual('title3');
+		expect(rows[1].image_url).toEqual('image1');
+		expect(rows[0].pubdate).toEqual('20120103');
 	});
 	
 	it('selectDisplay with arguments', function() {
@@ -49,11 +83,11 @@ describe('Feed', function() {
 		db.execute("INSERT INTO feeds VALUES (2,'title2','image2','20120102',NULL,0, 0)");
 		db.execute("INSERT INTO feeds VALUES (3,'title3','image3','20120103','filepath3',0, 0)");
 		
-		var rows = feed.selectDisplay(2);
+		var rows = feed.selectDisplay('20120102');
 		
 		expect(rows.length).toEqual(1);
-		expect(rows[0].title).toEqual('title3');
-		expect(rows[0].pubdate).toEqual('20120103');
+		expect(rows[0].title).toEqual('title1');
+		expect(rows[0].pubdate).toEqual('20120101');
 	});
 	
 	it('selectUndownload', function() {

@@ -3,6 +3,8 @@
  * 	This object should be acted as like a singleton model.
  * 	Don't create with new!! It cause script error!!
  */
+// TODO Need to think about delete old or useless files.
+
 var EVENT_COMPLETE = 'app:imageManager:complete';
 var _readPage, _rssLoader, _feedQueue, _inDownload;
 
@@ -48,12 +50,16 @@ function _loadRss() {
 }
 
 function _rssLoaderSuccessHandler(feedsData) {
-	var rowData;
+	var rowData, checkRecord;
 	var feed = new (require('/app/models/Feed'))();
 	
 	for (var i = 0, len = feedsData.length; i < len; i++) {
-		rowData = [null, feedsData[i].title, feedsData[i].image_url, feedsData[i].pubdate, null, 0, 0];
-		feed.insert(rowData);
+		// Check if there are data already have.
+		checkRecord = feed.selectByImageUrl(feedsData[i].image_url);
+		if (checkRecord === null) {
+			rowData = [null, feedsData[i].title, feedsData[i].image_url, feedsData[i].pubdate, null, 0, 0];
+			feed.insert(rowData);
+		}
 	}
 	
 	setTimeout(_downloadImage, 100);
@@ -74,19 +80,14 @@ function _fileDownloadManagerCompleteHandler() {
 	// TODO Needs to think editing queue block
 	
 	// Add queue
-	var lastId;
+	var lastPubdate;
 	if (_feedQueue.length > 0) {
-		lastId = _feedQueue[_feedQueue.length - 1].id;
+		lastPubdate = _feedQueue[_feedQueue.length - 1].pubdate;
+		Ti.API.info('[imageManager]Last pubdate is = ' + lastPubdate);
 	}
-	// var lastPubdate;
-	// if (_feedQueue.length > 0) {
-		// lastPubdate = _feedQueue[_feedQueue.length - 1].pubdate;
-		// Ti.API.info('[imageManager]Last pubdate is = ' + lastPubdate);
-	// }
 	
 	var feed = new (require('/app/models/Feed'))();
-	var rows = feed.selectDisplay(lastId);
-	// var rows = feed.selectDisplay(lastPubdate);
+	var rows = feed.selectDisplay(lastPubdate);
 	for (var i = 0, len = rows.length; i < len; i++) {
 		_feedQueue.push(rows[i]);
 	}
