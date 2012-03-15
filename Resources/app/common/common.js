@@ -5,26 +5,6 @@ function twoZeroPadding(s) {
 	return ('0' + s).slice(-2);
 }
 
-function getYYYYMMDDHHMMSS(dateStr) {
-	var date;
-	
-	try {
-		date = new Date(dateStr);
-	} catch (e) {
-		date = new Date();
-	}
-	
-	var year = date.getFullYear();
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-	var hour = date.getHours();
-	var minute = date.getMinutes();
-	var second = date.getSeconds();
-	
-	return year + twoZeroPadding(month) + twoZeroPadding(day) + 
-		twoZeroPadding(hour) + twoZeroPadding(minute) + twoZeroPadding(second);
-}
-
 function getRandomString() {
 	var base = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	base = base.split('');
@@ -62,7 +42,6 @@ function checkFileExtension(extension) {
 
 // Export
 exports.twoZeroPadding = twoZeroPadding;
-exports.getYYYYMMDDHHMMSS = getYYYYMMDDHHMMSS;
 exports.isUrl = isUrl;
 exports.getRandomString = getRandomString;
 exports.getFileExtension = getFileExtension;

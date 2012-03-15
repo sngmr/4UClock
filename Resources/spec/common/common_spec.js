@@ -19,11 +19,6 @@ describe('common', function() {
 		expect(common.twoZeroPadding('01')).toEqual('01');
 	});
 	
-	it('getYYYYMMDDHHMMSS', function() {
-		expect(common.getYYYYMMDDHHMMSS('Fri, 21 Oct 2011 12:26:24 +0900')).toEqual('20111021122624');
-		expect(common.getYYYYMMDDHHMMSS('Sat, 4 Feb 2012 01:04:03 +0900')).toEqual('20120204010403');
-	});
-	
 	it('getRandomString', function() {
 		var str, firstChar;
 		for (var i = 0; i < 10000; i++) {
