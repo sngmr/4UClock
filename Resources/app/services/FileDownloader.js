@@ -1,5 +1,3 @@
-var common = require('/app/common/common');
-
 /**
  * File downloader
  * @constructor
