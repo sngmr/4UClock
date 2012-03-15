@@ -1,21 +1,19 @@
 describe("FileDownloader", function() {
-	var downloader, saveDir;
+	var downloader;
 	var url = 'http://4u-beautyimg.com/thumb/l/l_f54a50178ac024480a911556407cc7e9.jpg';
+	var saveFileName = require('/app/common/constant').IMAGE_FILE_DIR_NAME + Ti.Filesystem.separator + 'hoge.jpg';
 	
 	beforeEach(function() {
 		downloader = new (require('/app/services/FileDownloader'))();
-		saveDir = require('/app/common/constant').IMAGE_FILE_DIR_NAME;
 	});
 	
 	it('Download success', function() {
 		var _success = false;
 		var _error = false;
-		var _fileName;
 		var _errorMsg;
 		
 		var callback = {
-			success: function(fileName) {
-				_fileName = fileName;
+			success: function() {
 				_success = true; 
 			},
 			error: function(errorMsg) {
@@ -23,49 +21,22 @@ describe("FileDownloader", function() {
 				_error = true;
 			},
 		};
-		downloader.download(url, callback);
+		downloader.download(url, saveFileName, callback);
 		
 		waitsFor(function() { return _success; }, 'Never finish async method.', 10000);
 		
 		runs(function() {
-			expect(Ti.Filesystem.getFile(saveDir, _fileName).exists()).toBeTruthy();
-		});
-	});
-	
-	it('Invalid url', function() {
-		var _success = false;
-		var _error = false;
-		var _fileName;
-		var _errorMsg;
-		
-		var callback = {
-			success: function(fileName) {
-				_fileName = fileName;
-				_success = true; 
-			},
-			error: function(errorMsg) {
-				_errorMsg = errorMsg;
-				_error = true;
-			},
-		};
-		downloader.download('hogehoge', callback);
-		
-		waitsFor(function() { return _error; }, 'Never finish async method.', 10000);
-		
-		runs(function() {
-			expect(_errorMsg).toEqual('Invalid url');
+			expect(Ti.Filesystem.getFile(saveFileName).exists()).toBeTruthy();
 		});
 	});
 	
 	it('Download file not found', function() {
 		var _success = false;
 		var _error = false;
-		var _fileName;
 		var _errorMsg;
 		
 		var callback = {
-			success: function(fileName) {
-				_fileName = fileName;
+			success: function() {
 				_success = true; 
 			},
 			error: function(errorMsg) {
@@ -73,24 +44,27 @@ describe("FileDownloader", function() {
 				_error = true;
 			},
 		};
-		downloader.download('http://4u-beautyimg.com/thumb/l/HOGEHOGE.jpg', callback);
+		downloader.download(url + '.hoge', saveFileName, callback);
 		
 		waitsFor(function() { return _error; }, 'Never finish async method.', 10000);
 		
 		runs(function() {
+			expect(_error).toBeTruthy();
 			expect(/404/.test(_errorMsg)).toBeTruthy();
 		});
 	});
 	
-	it('File extension error', function() {
+	it('Timeout test', function() {
 		var _success = false;
 		var _error = false;
-		var _fileName;
 		var _errorMsg;
 		
+		// Set timeout
+		var options = { timeout: 10 };
+		downloader = new (require('/app/services/FileDownloader'))(options);
+		
 		var callback = {
-			success: function(fileName) {
-				_fileName = fileName;
+			success: function() {
 				_success = true; 
 			},
 			error: function(errorMsg) {
@@ -98,12 +72,13 @@ describe("FileDownloader", function() {
 				_error = true;
 			},
 		};
-		downloader.download('http://google.com/hogehoge', callback);
+		downloader.download(url, saveFileName, callback);
 		
-		waitsFor(function() { return _error; }, 'Never finish async method.', 10000);
+		waitsFor(function() { return _error; }, 'Timeout value dose NOT efficent.', 10000);
 		
 		runs(function() {
-			expect(_errorMsg).toEqual('Invalid file extension');
+			expect(_error).toBeTruthy();
+			expect(/timed out/.test(_errorMsg)).toBeTruthy();
 		});
 	});
 });
