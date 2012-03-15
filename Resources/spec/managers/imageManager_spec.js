@@ -1,4 +1,5 @@
 describe("ImageManager", function() {
+	/*
 	var manager, db, saveDir;
 	
 	beforeEach(function() {
@@ -91,4 +92,5 @@ describe("ImageManager", function() {
 			});
 		});
 	});
+	*/
 });

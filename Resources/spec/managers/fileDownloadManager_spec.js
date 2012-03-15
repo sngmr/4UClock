@@ -1,4 +1,5 @@
 describe("FileDownloadManager", function() {
+	/*
 	var manager, db, saveDir;
 	
 	beforeEach(function() {
@@ -61,4 +62,5 @@ describe("FileDownloadManager", function() {
 			expect(Ti.Filesystem.getFile(saveDir, rows[2].filename).exists()).toBeTruthy();
 		});
 	});
+	*/
 });

@@ -1,21 +1,29 @@
 /**
  * Database utility
  */
+
+// HACK:
+// I don't want to get rejected by Apple because of broken law policy stored file,
+// so customize database file location to Libraly/Caches
+var DB_NAME = '../Caches/fuclock';
+
 var _db;
-var _constant = require('/app/common/constant');
 
 exports.getDatabase = function() {
 	if (!_db) {
-		_db = Ti.Database.install('empty.sql', _constant.DB_NAME);
+		_db = Ti.Database.install('empty.sql', DB_NAME);
 		_db.execute(
 			'CREATE TABLE IF NOT EXISTS feeds (' +
 				'id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,' +
 				'title TEXT,' +
+				'link TEXT,' +
 				'image_url TEXT,' +
 				'pubdate TEXT,'+
-				'filename TEXT,' +
+				'image_file_name TEXT,' +
 				'width INTEGER,' +
-				'height INTEGER' +
+				'height INTEGER,' +
+				'display_count INTEGER,' +
+				'error INTEGER' +
 			')'
 		);
 	}

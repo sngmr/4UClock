@@ -3,102 +3,160 @@
  * 	This object should be acted as like a singleton model.
  * 	Don't create with new!! It cause script error!!
  */
-// TODO Need to think about delete old or useless files.
+// TODO Need to think about delete old files.
 
-var EVENT_COMPLETE = 'app:imageManager:complete';
-var _readPage, _rssLoader, _feedQueue, _inDownload;
+// HACK: Change normal application data directory to other for follow apple's save file guidelines of iCloud
+var IMAGE_FILE_DIR_NAME = 
+	Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, '../Library/Caches/Images/').nativePath;
 
-function init() {
-	_readPage = 1;
-	_rssLoader = new (require('/app/services/RssLoader'))();
-	_feedQueue = [];
-	_inDownload = false;
-	
-	Ti.App.addEventListener(
-		require('/app/managers/fileDownloadManager').EVENT_COMPLETE,
-		_fileDownloadManagerCompleteHandler);
-	
-	_loadRss();
+var _dataManager;
+var _fileDownloader;
+var _common;
+
+var _imageDataCurrent;
+var _imageDataNext;
+
+/**
+ * Initialize imageManager
+ * @param {dataManager} dataManager Instance of some dataManager
+ */
+function init(dataManager) {
+	_dataManager = dataManager;
+	_fileDownloader = new (require('/app/services/FileDownloader'))({ timeout: 15000 });
+	_common = require('/app/common/common');
 };
 
+/**
+ * Return next image data
+ * @return {object} Next image data
+ */
 function getNext() {
-	var data = _feedQueue.shift();
+	// TODO Require implement when _imageDataNext is NOT ready
 	
-	Ti.API.info('[imageManager]Queue length = ' + _feedQueue.length);
-	if (_feedQueue.length <= 10 && !_inDownload) {
-		_readPage++;
-		setTimeout(_loadRss, 100);
+	if (_imageDataCurrent === null && _imageDataNext === null) {
+		// First launch 
+		_prepareFirstLaunch();
+	} else {
+		// Tell _dataManager, current image file is displayed
+		_dataManager.setAsDisplayed(_imageDataCurrent);
+		_imageDataCurrent = _imageDataNext;
+		_imageDataNext = null;
 	}
 	
-	// TODO Need implementation if there is no data
-	return data;
+	// Prepare next image
+	_prepareNextImage();
+	
+	return _imageDataCurrent;
 }
 
-function _loadRss() {
-	_inDownload = true;
+function _prepareFirstLaunch() {
+	// If there are cached image file, use that for first and second image
+	// If not, use default image
+	// TODO Find local image file
+	var imageFileName;
+	var imageInfo;
 	
-	var url = require('/app/common/constant').RSS_FEEDS_BASE_URL + _readPage;
-	_rssLoader.load(
-		url,
-		{
-			success: _rssLoaderSuccessHandler,
-			error: _rssLoaderErrorHandler,
-		}
-	);
+	// Current
+	imageFileName = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, 'images/default_1.jpg').nativePath;
+	imageInfo = _getImageFileInfo(imageFileName);
+	_imageDataCurrent = {
+		image_file_name: imageFileName,
+		width: imageInfo.width,
+		height: imageInfo.height,
+	};
 	
-	Ti.API.info('[imageManager]Reading RSS => ' + url);
+	// Next
+	imageFileName = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, 'images/default_2.jpg').nativePath;
+	imageInfo = _getImageFileInfo(imageFileName);
+	_imageDataNext = {
+		image_file_name: imageFileName,
+		width: imageInfo.width,
+		height: imageInfo.height,
+	};
+} 
+
+function _prepareNextImage() {
+	var imageData = _dataManager.getNextImageData();
+	
+	// Check if image file is already exists
+	var imageFile = Ti.Filesystem.getFile(imageData.image_file_name);
+	if (!imageFile.exists()) {
+		// Set next image data
+		_imageDataNext = imageData;
+	} else {
+		// Download image file
+		_download(imageData);
+	}
 }
 
-function _rssLoaderSuccessHandler(feedsData) {
-	var rowData, checkRecord;
-	var feed = new (require('/app/models/Feed'))();
+function _download(imageData) {
+	var hasError = false;
 	
-	for (var i = 0, len = feedsData.length; i < len; i++) {
-		// Check if there are data already have.
-		checkRecord = feed.selectByImageUrl(feedsData[i].image_url);
-		if (checkRecord === null) {
-			rowData = [null, feedsData[i].title, feedsData[i].image_url, feedsData[i].pubdate, null, 0, 0];
-			feed.insert(rowData);
-		}
+	// Check url & extension
+	var url = imageData.image_url;
+	if (!_common.isUrl(url)) {
+		Ti.API.warn('[imageManager]Given url is invalid. url = ' + url);
+		hasError = true;
+	}
+	var extension = _common.getFileExtension(url);
+	if (!extension) {
+		Ti.API.warn('[imageManager]Given url extension is invalid. url = ' + url);
+		hasError = true;
+	} else if (!_common.checkFileExtension(extension)) {
+		Ti.API.warn('[imageManager]Given url extension is unsuppoted. url = ' + url);
+		hasError = true;
 	}
 	
-	setTimeout(_downloadImage, 100);
-}
-
-function _rssLoaderErrorHandler(errorMessage) {
-	// TODO Fix error handling
-	alert(errorMessage);
-	_inDownload = false;
-}
-
-function _downloadImage() {
-	require('/app/managers/fileDownloadManager').start();
-}
-
-function _fileDownloadManagerCompleteHandler() {
-	// TODO Needs to think if there is no image file available
-	// TODO Needs to think editing queue block
-	
-	// Add queue
-	var lastPubdate;
-	if (_feedQueue.length > 0) {
-		lastPubdate = _feedQueue[_feedQueue.length - 1].pubdate;
-		Ti.API.info('[imageManager]Last pubdate is = ' + lastPubdate);
+	// If error occured, tell data manager for error and try another image file
+	if (hasError) {
+		_dataManager.setAsError(imageData);
+		setTimeout(_prepareNextImage, 500);
+		return;
 	}
 	
-	var feed = new (require('/app/models/Feed'))();
-	var rows = feed.selectDisplay(lastPubdate);
-	for (var i = 0, len = rows.length; i < len; i++) {
-		_feedQueue.push(rows[i]);
-	}
-	Ti.API.info('[imageManager]fileDownloadManager Complete Add Count = ' + rows.length);
-	Ti.API.info('[imageManager]fileDownloadManager Complete Queue Count = ' + _feedQueue.length);
+	// Create local file name
+	var imageFileName = 
+		Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME, _common.getRandomString() + '.' + extension).nativePath;
 	
-	_inDownload = false;
-	Ti.App.fireEvent(EVENT_COMPLETE);
+	// download
+	_fileDownloader.download(url, imageFileName, {
+		success: function() {
+			// Tell data manager image file infomation, and set image data as next
+			imageData.image_file_name = imageFileName;
+			
+			var imageFileInfo = _getImageFileInfo(imageFileName);
+			imageData.width = imageFileInfo.width;
+			imageData.height = imageFileInfo.height;
+			
+			_dataManager.setImageFileInfo(imageData);
+			
+			// Set working image data as next image data
+			_imageDataNext = imageData;
+		},
+		error: function(errorMessage) {
+			// Tell data manager for error and try another image file
+			Ti.API.warn('[imageManager]File download error. msg = ' + errorMessage);
+			_dataManager.setAsError(imageData);
+			setTimeout(_prepareNextImage, 500);
+		},
+	});
+	Ti.API.info('[imageManager]File download start. url = ' + url);
+}
+
+function _getImageFileInfo(imageFileName) {
+	var imageFile = Ti.Filesystem.getFile(imageFileName);
+	var imageBlob = imageFile.read();
+	
+	var imageFileInfo = {
+		width: imageBlob.width,
+		height: imageBlob.height,
+	};
+	imageBlob = null;
+	imageFile = null;
+	
+	return imageFileInfo;
 }
 
 // Export
 exports.init = init;
 exports.getNext = getNext;
-exports.EVENT_COMPLETE = EVENT_COMPLETE;
