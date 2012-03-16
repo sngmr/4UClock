@@ -13,18 +13,18 @@ exports.getDatabase = function() {
 	if (!_db) {
 		_db = Ti.Database.install('empty.sql', DB_NAME);
 		_db.execute(
-			'CREATE TABLE IF NOT EXISTS feeds (' +
-				'id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,' +
-				'title TEXT,' +
-				'link TEXT,' +
-				'image_url TEXT,' +
-				'pubdate TEXT,'+
-				'image_file_name TEXT,' +
-				'width INTEGER,' +
-				'height INTEGER,' +
-				'display_count INTEGER,' +
-				'error INTEGER' +
-			')'
+			"CREATE TABLE IF NOT EXISTS feeds (" +
+				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+				"title TEXT NOT NULL DEFAULT ''," +
+				"link TEXT NOT NULL DEFAULT ''," +
+				"image_url TEXT NOT NULL DEFAULT ''," +
+				"pubdate TEXT NOT NULL DEFAULT '',"+
+				"image_file_name TEXT NOT NULL DEFAULT ''," +
+				"width INTEGER DEFAULT 0," +
+				"height INTEGER DEFAULT 0," +
+				"display_count INTEGER DEFAULT 0," +
+				"error INTEGER DEFAULT 0" +
+			")"
 		);
 	}
 	return _db;

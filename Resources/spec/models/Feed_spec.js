@@ -1,4 +1,5 @@
 describe('Feed', function() {
+	/*
 	var db;
 	beforeEach(function() {
 		db = require('/app/common/dbutil').getDatabase();
@@ -149,5 +150,5 @@ describe('Feed', function() {
 		var rows = feed.selectAll();
 		expect(rows.length).toEqual(0);
 	});
-	
+	*/
 });

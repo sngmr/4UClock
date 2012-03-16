@@ -3,13 +3,14 @@
  */
 var _self, _imageManager, _imageView, _clockLabel;
 
-function ClockWindow() {
+function ClockWindow(imageManager) {
+	_imageManager = imageManager;
+	
 	// Setting UI components
 	_self = Ti.UI.createWindow({
 		fullscreen: true,
 		navBarHidden: true,
 		exitOnClose: true,
-		orientationModes: [Ti.UI.PORTRAIT],
 	});
 	
 	var container = Ti.UI.createView({
@@ -40,38 +41,34 @@ function ClockWindow() {
 	});
 	header.add(_clockLabel);
 	container.add(header);
+	
 	_self.add(container);
 	
-	// Execute when ImageManager get ready
-	_imageManager = require('/app/managers/imageManager');
-	Ti.App.addEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
-	_imageManager.init();
-	
-	// Event listener on doble tap and shake
-	_imageView.addEventListener('doubletap', _imageDoubleTapHander);
-	Ti.Gesture.addEventListener('shake', _shakeHandler);
+	// Set beauty
+	_changeImage();
 	
 	// Start timer for change clock and image
-	// TODO Ummmmh. It's not good for the clock. Need to change.
+	// TODO Uhhhhhmmm. It's not good for the clock. Need to change.
 	var date = new Date();
 	_clockLabel.setText(_getTime());
-	setTimeout(_startClockTimer, 60000 - (date.getSeconds() * 1000 + date.getMilliseconds()));
+	setTimeout(_startClockTimer, 5000 - (date.getSeconds() * 1000 + date.getMilliseconds()));
+	// setTimeout(_startClockTimer, 60000 - (date.getSeconds() * 1000 + date.getMilliseconds()));
 	
 	return _self;
 }
 
 function _changeImage() {
-	var data = _imageManager.getNext();
-	if (!data) {
+	var imageFileData = _imageManager.getNext();
+	if (!imageFileData) {
 		Ti.API.error('[ClockWindow]Woops!! ImageManager dose NOT have next image!!! I am waiting...');
 		return;
 	}
-	_imageView.setImage(Ti.Filesystem.getFile(require('/app/common/constant').IMAGE_FILE_DIR_NAME, data.filename).nativePath);
+	_imageView.setImage(Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath);
 }
 
 function _startClockTimer() {
 	_timerHadler();
-	setInterval(_timerHadler, 60000);
+	setInterval(_timerHadler, 5000);
 }
 
 function _timerHadler() {
@@ -87,19 +84,6 @@ function _getTime() {
 	
 	return common.twoZeroPadding(hour) + ':' + common.twoZeroPadding(minute);
 }
-
-function _imageManagerReadyHandler() {
-	Ti.App.removeEventListener(_imageManager.EVENT_COMPLETE, _imageManagerReadyHandler);
-	_changeImage();
-}
-
-function _imageDoubleTapHander(e) {
-	_changeImage();
-}
-
-function _shakeHandler(e) {
-	_imageView.visible = !_imageView.visible;
-} 
 
 // Export
 module.exports = ClockWindow;

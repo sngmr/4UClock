@@ -43,10 +43,11 @@ function RssLoader(options) {
 						var item = items.item(i);
 						data.push({
 							title: item.getElementsByTagName('title').item(0).text,
+							link: item.getElementsByTagName('link').item(0).text,
+							pubdate: _getYYYYMMDDHHMMSS(item.getElementsByTagName('pubDate').item(0).text),
 							// Now I decide to download "media:content", but if it will happen a log of error,
 							// change to "media:thumbnail" tab and replace "/m/m_" to "/l/l_".
 							image_url: item.getElementsByTagName('media:content').item(0).getAttribute('url'),
-							pubdate: _getYYYYMMDDHHMMSS(item.getElementsByTagName('pubDate').item(0).text),
 						});
 					}
 					if (o.success) {

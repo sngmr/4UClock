@@ -68,17 +68,6 @@ function FileDownloader(options) {
 }
 
 function _createSaveFile(saveFileName) {
-	// Check directory exists
-	var parentDir = Ti.Filesystem.getFile(saveFileName).getParent();
-	if (typeof parentDir === "string") {
-		// iOS
-		parentDir = Ti.Filesystem.getFile(parentDir);
-	}
-	if (!parentDir.exists()) {
-		parentDir.createDirectory();
-	}
-	parentDir = null;
-	
 	var saveFile = Ti.Filesystem.getFile(saveFileName);
 	if (saveFile.exists()) {
 		saveFile.deleteFile();

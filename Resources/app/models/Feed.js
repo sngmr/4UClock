@@ -1,79 +1,80 @@
 /**
  * Feed model
  */
+var _db = require('/app/common/dbutil').getDatabase();
+
 function Feed() {
-	var _db = require('/app/common/dbutil').getDatabase();
+	var api = {};
 	
-	this.select = function(id) {
-		var rows = _select('SELECT * FROM feeds WHERE id = ?', id);
+	api.availableFeedCount = function() {
+		var rows = _select('SELECT COUNT(1) as count FROM feeds WHERE error = 0');
 		if (rows.length > 0) {
-			return rows[0];
+			return rows[0].count;
 		} else {
-			return null;
+			return 0;
 		}
 	}
 	
-	this.selectByImageUrl = function(imageUrl) {
-		var rows = _select('SELECT * FROM feeds WHERE image_url = ?', imageUrl);
+	api.hasSameFeedData = function(link) {
+		var rows = _select('SELECT * FROM feeds WHERE link = ?', link);
 		if (rows.length > 0) {
-			return rows[0];
+			return true;
 		} else {
-			return null;
+			return false;
 		}
 	}
 	
-	this.selectAll = function() {
-		return _select('SELECT * FROM feeds ORDER BY id');
+	api.getNextDisplayFeedCandidates = function(count) {
+		return _select('SELECT * FROM feeds WHERE error = 0 ORDER BY display_count ASC, pubdate DESC LIMIT ?', count);
 	}
 	
-	this.selectDisplay = function(pubdate) {
-		if (pubdate) {
-			return _select('SELECT * FROM feeds WHERE filename IS NOT NULL AND pubdate < ? ORDER BY pubdate DESC', pubdate);
-		} else {
-			return _select('SELECT * FROM feeds WHERE filename IS NOT NULL ORDER BY pubdate DESC');
-		}
+	api.getLowPriorityFeedCandidates = function(count) {
+		return _select("SELECT * FROM feeds WHERE image_file_name != '' ORDER BY display_count DESC, pubdate ASC LIMIT ?", count);
 	}
 	
-	this.selectUndownload = function() {
-		return _select('SELECT * FROM feeds WHERE filename IS NULL ORDER BY id');
-	}
-	
-	this.insert = function(allValues) {
-		_db.execute('INSERT INTO feeds VALUES (?,?,?,?,?,?,?)', allValues);
+	api.insert = function(allValues) {
+		_db.execute('INSERT INTO feeds VALUES (?,?,?,?,?,?,?,?,?,?)', allValues);
 		return _db.getRowsAffected();
 	}
 	
-	this.updateFileData = function(id, filePath, width, height) {
-		_db.execute('UPDATE feeds SET filename=?,width=?,height=? WHERE id=?', filePath, width, height, id);
+	api.updateFeedFileInfo = function(id, imageFileName, width, height) {
+		_db.execute('UPDATE feeds SET image_file_name=?, width=?, height=? WHERE id=?', imageFileName, width, height, id);
 		return _db.getRowsAffected();
 	}
 	
-	this.remove = function(id) {
-		_db.execute('DELETE FROM feeds WHERE id = ?', id);
+	api.updateFeedAsDisplayed = function(id) {
+		_db.execute('UPDATE feeds SET display_count=display_count+1 WHERE id=?', id);
 		return _db.getRowsAffected();
 	}
 	
-	function _select(sql, placeHolders) {
-		var rs;
-		if (placeHolders) {
-			rs = _db.execute(sql, placeHolders);
-		} else {
-			rs = _db.execute(sql);
-		}
-		
-		var rows = [];
-		var row;
-		while (rs.isValidRow()) {
-			row = {};
-			for (var i = 0, len = rs.fieldCount(); i < len; i++) {
-				row[rs.fieldName(i)] = rs.field(i);
-			}
-			rows.push(row);
-			rs.next();
-		}
-		rs.close();
-		return rows;
+	api.updateFeedAsError = function(id) {
+		_db.execute('UPDATE feeds SET error=1 WHERE id=?', id);
+		return _db.getRowsAffected();
 	}
+	
+	return api;
+}
+
+function _select(sql, placeHolders) {
+	var rs;
+	if (placeHolders) {
+		rs = _db.execute(sql, placeHolders);
+	} else {
+		rs = _db.execute(sql);
+	}
+	
+	var rows = [];
+	var row;
+	while (rs.isValidRow()) {
+		row = {};
+		for (var i = 0, len = rs.fieldCount(); i < len; i++) {
+			row[rs.fieldName(i)] = rs.field(i);
+		}
+		rows.push(row);
+		rs.next();
+	}
+	rs.close();
+	return rows;
 }
 
 // Export

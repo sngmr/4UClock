@@ -6,15 +6,16 @@ function main() {
 	Titanium.App.idleTimerDisabled = true;
 	Titanium.UI.backgroundColor = '#000000';
 	
+	// Initialize managers
+	var fuDataManager = require('/app/managers/fuDataManager');
+	var imageManager = require('/app/managers/imageManager');
+	
+	fuDataManager.init();
+	imageManager.init(fuDataManager);
+	
 	// Let's roll
-	var win;
-	var completeEvent = require('/app/managers/imageManager').EVENT_COMPLETE;
-	var imageManagerReadyHandler = function(e) {
-		win.open();
-		Titanium.App.removeEventListener(completeEvent, imageManagerReadyHandler);
-	};
-	Titanium.App.addEventListener(completeEvent, imageManagerReadyHandler);
-	win = new (require('/app/ui/ClockWindow'))();
+	var win = new (require('/app/views/ClockWindow'))(imageManager);
+	win.open();
 }
 
 // Export
