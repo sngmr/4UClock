@@ -89,6 +89,12 @@ function getLowPriorityImageDataList() {
 }
 
 function _startCollectRssFeedsLoop() {
+	// Check network connectivity
+	if (!Ti.Network.online) {
+		Ti.API.warn('[fuDataManager]Network is down.');
+		return;
+	}
+		
 	// Collect feeds slowly until enough feed it has got
 	// Finish condition:
 	//   Saved feeds count is more than 3,000 AND Reach the feed already we have

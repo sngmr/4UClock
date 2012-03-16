@@ -28,11 +28,6 @@ function FileDownloader(options) {
 		}
 		xhr.abort();
 		
-		if (!Ti.Network.online) {
-			_callOnError(o, 'No connection');
-			return;
-		}
-		
 		// Setting HTTPClient
 		xhr.onload = function() {
 			if (this.status == 200 && !this.responseData.text) {	// Check if the response is html (when error)

@@ -87,6 +87,12 @@ function _prepareNextImage() {
 function _download(imageData) {
 	var hasError = false;
 	
+	// Check network connectivity
+	if (!Ti.Network.online) {
+		Ti.API.warn('[imageManager]Network is down.');
+		return;
+	}
+		
 	// Check url & extension
 	var url = imageData.image_url;
 	if (!_common.isUrl(url)) {

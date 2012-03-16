@@ -1,35 +1,51 @@
 /**
  * Clock Window
+ * It's way to implement...
  */
-var _self, _imageManager, _imageView, _clockLabel;
+var _self, _imageViewContainer, _imageViews, _clockLabel, _emergencyView;
+var _imageManager;
+var _switchCounter;
+var _showEmergency;
 
 function ClockWindow(imageManager) {
 	_imageManager = imageManager;
+	_switchCounter = 0;
+	_showEmergency = false;
 	
 	// Setting UI components
 	_self = Ti.UI.createWindow({
 		fullscreen: true,
-		navBarHidden: true,
-		exitOnClose: true,
+		orientationModes: [Ti.UI.PORTRAIT, Ti.UI.UPSIDE_PORTRAIT, Ti.UI.LANDSCAPE_LEFT, Ti.UI.LANDSCAPE_RIGHT],
 	});
 	
-	var container = Ti.UI.createView({
+	// Image container
+	_imageViewContainer = Ti.UI.createView({
+		top: 0,
+		left: 0,
 		width: '100%',
 		height: '100%',
 	});
 	
-	_imageView = Ti.UI.createImageView({
-		width: '100%',
-		height: '100%',
-	});
-	container.add(_imageView);
+	// Image views
+	_imageViews = [];
+	for (var i = 0; i < 2; i++) {
+		_imageViews.push(Ti.UI.createImageView({
+			width: '100%',
+			height: '100%',
+			backgroundColor: '#000000',
+			opacity: 0,
+		}));
+	}
+	_imageViewContainer.add(_imageViews[0]);
+	_imageViewContainer.add(_imageViews[1]);
 	
+	// Header
 	var header = Ti.UI.createView({
 		width: '100%',
 		height: 'auto',
 		top: 0,
 		backgroundColor: '#000000',
-		opacity: 0.35,
+		opacity: 0.45,
 	});
 	_clockLabel = Ti.UI.createLabel({
 		text: '',
@@ -38,42 +54,60 @@ function ClockWindow(imageManager) {
 		height: 'auto',
 		color: '#FFFFFF',
 		font: { fontWeight: 'bold', fontSize: 32 },
+		opacity: 1,
 	});
 	header.add(_clockLabel);
-	container.add(header);
+	_imageViewContainer.add(header);
 	
-	_self.add(container);
+	_self.add(_imageViewContainer);
+	_imageViewContainer.addEventListener('click', _toggleEmergencyMode);
 	
-	// Set beauty
-	_changeImage();
+	// Emergency view
+	_emergencyView = Ti.UI.createView({
+		top: -1,
+		left: 0,
+		width: '100%',
+		height: 1,
+		backgroundColor: '#000000',
+	});
+	_self.add(_emergencyView);
+	_emergencyView.addEventListener('click', _toggleEmergencyMode);
 	
 	// Start timer for change clock and image
+	_changeDisplay();
+	
 	// TODO Uhhhhhmmm. It's not good for the clock. Need to change.
 	var date = new Date();
-	_clockLabel.setText(_getTime());
-	setTimeout(_startClockTimer, 5000 - (date.getSeconds() * 1000 + date.getMilliseconds()));
+	setTimeout(_startClockTimer, 10000);
 	// setTimeout(_startClockTimer, 60000 - (date.getSeconds() * 1000 + date.getMilliseconds()));
 	
 	return _self;
 }
 
-function _changeImage() {
+function _startClockTimer() {
+	_changeDisplay();
+	setInterval(_changeDisplay, 10000);
+}
+
+function _changeDisplay() {
+	// Set time
+	_clockLabel.setText(_getTime());
+	
+	// Detect which image view is currently showing
+	var currentImageView = _imageViews[_switchCounter % 2];
+	_switchCounter++;
+	var nextImageView = _imageViews[_switchCounter % 2];
+	
+	// Change next image view's image with fade animation
 	var imageFileData = _imageManager.getNext();
 	if (!imageFileData) {
 		Ti.API.error('[ClockWindow]Woops!! ImageManager dose NOT have next image!!! I am waiting...');
 		return;
 	}
-	_imageView.setImage(Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath);
-}
-
-function _startClockTimer() {
-	_timerHadler();
-	setInterval(_timerHadler, 5000);
-}
-
-function _timerHadler() {
-	_clockLabel.setText(_getTime());
-	_changeImage();
+	
+	nextImageView.setImage(Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath);
+	currentImageView.animate({ opacity: 0, duration: 500 });
+	nextImageView.animate({ opacity: 1, duration: 500 });
 }
 
 function _getTime() {
@@ -83,6 +117,15 @@ function _getTime() {
 	var minute = date.getMinutes();
 	
 	return common.twoZeroPadding(hour) + ':' + common.twoZeroPadding(minute);
+}
+
+function _toggleEmergencyMode(event) {
+	if (_showEmergency) {
+		_emergencyView.animate({ height: 1, duration: 1000 }, function() { _emergencyView.height = 1; });
+	} else {
+		_emergencyView.animate({ height: Ti.Platform.displayCaps.platformHeight + 1, duration: 250 }, function() { _emergencyView.height = Ti.Platform.displayCaps.platformHeight + 1; });
+	}
+	_showEmergency = !_showEmergency;
 }
 
 // Export
