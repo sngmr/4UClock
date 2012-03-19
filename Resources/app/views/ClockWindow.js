@@ -70,6 +70,13 @@ function ClockWindow(imageManager) {
 		height: 1,
 		backgroundColor: '#000000',
 	});
+	var warningImage = Ti.UI.createImageView({
+		image: '/images/warning.png',
+		bottom: 0,
+		width: 1024,
+		height: 19,
+	});
+	_emergencyView.add(warningImage);
 	_self.add(_emergencyView);
 	_emergencyView.addEventListener('click', _toggleEmergencyMode);
 	
@@ -106,8 +113,8 @@ function _changeDisplay() {
 	}
 	
 	nextImageView.setImage(Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath);
-	currentImageView.animate({ opacity: 0, duration: 500 });
-	nextImageView.animate({ opacity: 1, duration: 500 });
+	currentImageView.animate({ opacity: 0, duration: 750 });
+	nextImageView.animate({ opacity: 1, duration: 750 });
 }
 
 function _getTime() {
@@ -123,7 +130,8 @@ function _toggleEmergencyMode(event) {
 	if (_showEmergency) {
 		_emergencyView.animate({ height: 1, duration: 1000 }, function() { _emergencyView.height = 1; });
 	} else {
-		_emergencyView.animate({ height: Ti.Platform.displayCaps.platformHeight + 1, duration: 250 }, function() { _emergencyView.height = Ti.Platform.displayCaps.platformHeight + 1; });
+		// 20 is for "top: -1" AND "warning.png"
+		_emergencyView.animate({ height: Ti.Platform.displayCaps.platformHeight + 20, duration: 250 }, function() { _emergencyView.height = Ti.Platform.displayCaps.platformHeight + 20; });
 	}
 	_showEmergency = !_showEmergency;
 }

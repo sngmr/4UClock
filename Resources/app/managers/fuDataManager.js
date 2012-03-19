@@ -31,16 +31,17 @@ function getNextImageData() {
 	var imageData = null;
 	var candidates = feedModel.getNextDisplayFeedCandidates(20);
 	if (candidates.length > 0) {
-		// If there are data which display count is 0, use them first.
-		var zeroDispCandidates = [];
+		// If there are data which display count is minimum, use them first.
+		var displayCandidates = [];
+		var minDisplayCount = candidates[0].display_count;
 		for (var i = 0, len = candidates.length; i < len; i++) {
-			if (candidates[i].display_count === 0) {
-				zeroDispCandidates.push(candidates[i]);
+			if (candidates[i].display_count === minDisplayCount) {
+				displayCandidates.push(candidates[i]);
 			}
 		}
 		
-		if (zeroDispCandidates.length > 0) {
-			imageData = zeroDispCandidates[Math.floor(Math.random() * zeroDispCandidates.length)];
+		if (displayCandidates.length > 0) {
+			imageData = displayCandidates[Math.floor(Math.random() * displayCandidates.length)];
 		} else {
 			imageData = candidates[Math.floor(Math.random() * candidates.length)];
 		}
