@@ -105,7 +105,13 @@ function _startCollectRssFeedsLoop() {
 		return;
 	}
 	
-	setTimeout(_loadRss, 15000);
+	if (feedsCount <= 5) {
+		// Load RSS immediately
+		_loadRss();
+	} else {
+		// Load RSS once a 5min
+		setTimeout(_loadRss, 300000);
+	}
 }
 
 function _loadRss() {

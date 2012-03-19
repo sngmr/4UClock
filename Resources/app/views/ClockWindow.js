@@ -8,37 +8,51 @@ var _common;
 var _imageManager;
 var _imageSwitchCounter;
 var _isEmergencyMode;
+var _clockInterval;
 
 function ClockWindow(imageManager) {
 	_common = require('/app/common/common');
 	_imageManager = imageManager;
 	_imageSwitchCounter = 0;
 	_isEmergencyMode = false;
+	_clockInterval = null;
 	
 	// Build view
 	_buildView();
 	
-	// Add event listener to view components
+	// Add event listener to view components and etc...
 	_self.addEventListener('click', _toggleEmergencyMode);
 	Ti.Gesture.addEventListener('orientationchange', _adjustEmergencyModeWhenRotate);
+	Ti.App.addEventListener('resume', _startClock);
+	Ti.App.addEventListener('pause', _stopClock);
 	
-	// Start timer for clock (+1sec is adjustment first launch)
-	setTimeout(_startClock, 60000 - ((new Date()).getSeconds() * 1000) + 1000);
-	
-	// Set initial image and clock
-	_change();
+	// Start clock
+	_startClock();
 	
 	return _self;
 }
 
 function _startClock() {
-	_change();
-	setInterval(_change, 60000);
+	if (_clockInterval !== null) {
+		_stopClock();
+	}
+	
+	_clockHandler();
+	
+	setTimeout(function() {
+		_clockHandler();
+		_clockInterval = setInterval(_clockHandler, 60000);
+	}, 60000 - ((new Date()).getSeconds() * 1000) + 100);	// +100ms is for insurance of 00sec has definitely passed
 }
 
-function _change() {
-	_changeClock();
+function _stopClock() {
+	clearInterval(_clockInterval);
+	_clockInterval = null;
+}
+
+function _clockHandler() {
 	_changeImage();
+	_changeClock();
 }
 
 function _changeImage() {
@@ -80,16 +94,15 @@ function _toggleEmergencyMode(event) {
 		_emergencyView.animate(
 			{ top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19, duration: 1000 }
 		);
-		Titanium.App.idleTimerDisabled = true;
 	} else {
 		_emergencyView.animate({ top: 0, duration: 250 });
-		Titanium.App.idleTimerDisabled = false;
 	}
 	_isEmergencyMode = !_isEmergencyMode;
 }
 
 function _adjustEmergencyModeWhenRotate(event) {
 	_emergencyView.height = Ti.Platform.displayCaps.getPlatformHeight() + 19;
+	_emergencyClockLabel.height = Ti.Platform.displayCaps.getPlatformHeight();
 	if (!_isEmergencyMode) {
 		_emergencyView.top = 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19;
 	}
@@ -147,8 +160,7 @@ function _buildView() {
 	
 	// Emergency view
 	_emergencyView = Ti.UI.createView({
-		top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19,
-		left: 0,
+		top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19,	// 19 is for warningImage
 		width: '100%',
 		height: Ti.Platform.displayCaps.getPlatformHeight() + 19,
 		backgroundColor: '#000000',
@@ -156,8 +168,9 @@ function _buildView() {
 	_emergencyClockLabel = Ti.UI.createLabel({
 		text: '',
 		textAlign: 'center',
+		top: 0,
 		width: '100%',
-		height: 'auto',
+		height: Ti.Platform.displayCaps.getPlatformHeight(),
 		color: '#FFFFFF',
 		font: { fontWeight: 'bold', fontSize: 72 },
 		opacity: 0.35,
