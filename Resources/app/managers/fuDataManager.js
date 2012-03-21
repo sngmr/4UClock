@@ -3,7 +3,8 @@
  * 	This object should be acted as like a singleton model.
  * 	Don't create with new!! It cause script error!!
  */
-var RSS_FEEDS_BASE_URL = 'http://4u-beautyimg.com/rss?page=';
+var RSS_FEEDS_BASE_URL = 'http://localhost:3000/rss?page=';
+// var RSS_FEEDS_BASE_URL = 'http://4u-beautyimg.com/rss?page=';
 
 var _rssLoader;
 var _lastLoadRssPageNo;
@@ -138,6 +139,9 @@ function _loadRss() {
 			var feed, hasSameFeed;
 			var feedModel = new (require('/app/models/Feed'))();
 			
+			if (feeds.length === 0) {
+				_noMoreUnreadRssFlag = true;
+			}
 			for (var i = 0, len = feeds.length; i < len; i++) {
 				// Check if there are data feeds already have
 				hasSameFeed = feedModel.hasSameFeedData(feeds[i].link);
