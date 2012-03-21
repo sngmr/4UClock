@@ -2,121 +2,42 @@
  * Clock Window
  */
 // UI components
-var _self, _imageViewContainer, _imageViews, _clockLabel, _emergencyView, _emergencyClockLabel;
+var _window, _imageViews, _clockLabel, _emergencyView, _emergencyClockLabel;
 
-var _common;
-var _imageManager;
+var _helper;
 var _imageSwitchCounter;
 var _isEmergencyMode;
-var _clockInterval;
 
-function ClockWindow(imageManager) {
-	_common = require('/app/common/common');
-	_imageManager = imageManager;
+function ClockWindow() {
 	_imageSwitchCounter = 0;
 	_isEmergencyMode = false;
-	_clockInterval = null;
 	
-	// Build view
+	// build view
 	_buildView();
 	
 	// Add event listener to view components and etc...
-	_self.addEventListener('click', _toggleEmergencyMode);
+	_window.addEventListener('click', _toggleEmergencyMode);
 	Ti.Gesture.addEventListener('orientationchange', _adjustEmergencyModeWhenRotate);
-	Ti.App.addEventListener('resume', _startClock);
-	Ti.App.addEventListener('pause', _stopClock);
 	
-	// Start clock
-	_startClock();
+	// create helper
+	var toHelper = {
+		setClock: _setClock,
+		setImage: _setImage,
+	};
+	_helper = new (require('/app/views/helpers/ClockWindowHelper'))(toHelper);
 	
-	return _self;
-}
-
-function _startClock() {
-	if (_clockInterval !== null) {
-		_stopClock();
-	}
-	
-	_clockHandler();
-	
-	setTimeout(function() {
-		_clockHandler();
-		_clockInterval = setInterval(_clockHandler, 60000);
-	}, 60000 - ((new Date()).getSeconds() * 1000) + 100);	// +100ms is for insurance of 00sec has definitely passed
-}
-
-function _stopClock() {
-	clearInterval(_clockInterval);
-	_clockInterval = null;
-}
-
-function _clockHandler() {
-	_changeImage();
-	_changeClock();
-}
-
-function _changeImage() {
-	// Detect which image view is currently showing
-	var currentImageView = _imageViews[_imageSwitchCounter % 2];
-	_imageSwitchCounter++;
-	var nextImageView = _imageViews[_imageSwitchCounter % 2];
-	
-	// Change next image view's image with fade animation
-	var imageFileData = _imageManager.getNext();
-	if (!imageFileData) {
-		Ti.API.error('[ClockWindow]Woops!! ImageManager dose NOT have next image!!! I am waiting...');
-		return;
-	}
-	
-	// Set image
-	nextImageView.setImage(
-		Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath);
-	
-	// Change image
-	currentImageView.animate({ opacity: 0, duration: 750 });
-	nextImageView.animate({ opacity: 1, duration: 750 });
-}
-
-function _changeClock() {
-	var date = new Date();
-	var hour = date.getHours();
-	var minute = date.getMinutes();
-	_clockLabel.setText(_common.twoZeroPadding(hour) + ':' + _common.twoZeroPadding(minute));
-	_emergencyClockLabel.setText(_common.twoZeroPadding(hour) + ':' + _common.twoZeroPadding(minute));
-}
-
-function _toggleEmergencyMode(event) {
-	// Stop animation
-	_emergencyView.animate();
-	
-	if (_isEmergencyMode) {
-		// 19 is for height of "warning.png". Want to hide warning.png after animation
-		_emergencyView.animate(
-			{ top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19, duration: 1000 }
-		);
-	} else {
-		_emergencyView.animate({ top: 0, duration: 250 });
-	}
-	_isEmergencyMode = !_isEmergencyMode;
-}
-
-function _adjustEmergencyModeWhenRotate(event) {
-	_emergencyView.height = Ti.Platform.displayCaps.getPlatformHeight() + 19;
-	_emergencyClockLabel.height = Ti.Platform.displayCaps.getPlatformHeight();
-	if (!_isEmergencyMode) {
-		_emergencyView.top = 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19;
-	}
+	return _window;
 }
 
 function _buildView() {
 	// Window
-	_self = Ti.UI.createWindow({
+	_window = Ti.UI.createWindow({
 		fullscreen: true,
 		orientationModes: [Ti.UI.PORTRAIT, Ti.UI.UPSIDE_PORTRAIT, Ti.UI.LANDSCAPE_LEFT, Ti.UI.LANDSCAPE_RIGHT],
 	});
 	
 	// Image container
-	_imageViewContainer = Ti.UI.createView({
+	var imageViewContainer = Ti.UI.createView({
 		top: 0,
 		left: 0,
 		width: '100%',
@@ -133,8 +54,8 @@ function _buildView() {
 			opacity: 0,
 		}));
 	}
-	_imageViewContainer.add(_imageViews[0]);
-	_imageViewContainer.add(_imageViews[1]);
+	imageViewContainer.add(_imageViews[0]);
+	imageViewContainer.add(_imageViews[1]);
 	
 	// Header
 	var header = Ti.UI.createView({
@@ -154,9 +75,9 @@ function _buildView() {
 		opacity: 1,
 	});
 	header.add(_clockLabel);
-	_imageViewContainer.add(header);
+	imageViewContainer.add(header);
 	
-	_self.add(_imageViewContainer);
+	_window.add(imageViewContainer);
 	
 	// Emergency view
 	_emergencyView = Ti.UI.createView({
@@ -184,7 +105,50 @@ function _buildView() {
 	_emergencyView.add(_emergencyClockLabel);
 	_emergencyView.add(warningImage);
 	
-	_self.add(_emergencyView);
+	_window.add(_emergencyView);
+}
+
+// Call by helper
+function _setClock(clockString) {
+	_clockLabel.setText(clockString);
+	_emergencyClockLabel.setText(clockString);
+}
+
+// Call by helper
+function _setImage(imageFilePath) {
+	// Detect which image view is currently showing
+	var currentImageView = _imageViews[_imageSwitchCounter % 2];
+	_imageSwitchCounter++;
+	var nextImageView = _imageViews[_imageSwitchCounter % 2];
+	
+	nextImageView.setImage(imageFilePath);
+	
+	// Change image animation
+	currentImageView.animate({ opacity: 0, duration: 750 });
+	nextImageView.animate({ opacity: 1, duration: 750 });
+}
+
+function _toggleEmergencyMode(event) {
+	// Stop animation
+	_emergencyView.animate();
+	
+	if (_isEmergencyMode) {
+		// 19 is for height of "warning.png". Want to hide warning.png after animation
+		_emergencyView.animate(
+			{ top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19, duration: 1000 }
+		);
+	} else {
+		_emergencyView.animate({ top: 0, duration: 250 });
+	}
+	_isEmergencyMode = !_isEmergencyMode;
+}
+
+function _adjustEmergencyModeWhenRotate(event) {
+	_emergencyView.height = Ti.Platform.displayCaps.getPlatformHeight() + 19;
+	_emergencyClockLabel.height = Ti.Platform.displayCaps.getPlatformHeight();
+	if (!_isEmergencyMode) {
+		_emergencyView.top = 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19;
+	}
 }
 
 // Export

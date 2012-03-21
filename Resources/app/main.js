@@ -14,7 +14,7 @@ function main() {
 	imageManager.init(fuDataManager);
 	
 	// Let's roll
-	var win = new (require('/app/views/ClockWindow'))(imageManager);
+	var win = new (require('/app/views/ClockWindow'))();
 	win.open();
 }
 

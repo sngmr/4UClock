@@ -11,21 +11,20 @@ var DEFAULT_IMAGE_FILE_DIR_NAME =
 	Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, 'images', 'defaults').nativePath;
 var MAX_CACHED_IMAGE_FILE_COUNT = 70;
 
+var _common;
 var _dataManager;
 var _fileDownloader;
-var _common;
-
-var _imageDataCurrent = null;
-var _imageDataNext = null;
+var _imageDataCurrent;
+var _imageDataNext;
 
 /**
  * Initialize imageManager
  * @param {dataManager} dataManager Instance of some dataManager
  */
 function init(dataManager) {
+	_common = require('/app/common/common');
 	_dataManager = dataManager;
 	_fileDownloader = new (require('/app/services/FileDownloader'))({ timeout: 15000 });
-	_common = require('/app/common/common');
 	
 	// Copy default image file to cache directory
 	_copyDefaultImageToCache();
@@ -36,11 +35,13 @@ function init(dataManager) {
  * @return {object} Next image data
  */
 function getNext() {
-	if (_imageDataCurrent === null && _imageDataNext === null) {
+	Ti.API.info('[imageManager]getNext start. ' + (new Date()));
+	if (!_imageDataNext && !_imageDataNext) {
 		// First launch. Use default image for showing beauty as soon as possible.
 		_imageDataCurrent = _getDefaultImageData();
-	} else if (_imageDataNext === null) {
+	} else if (!_imageDataNext) {
 		// If prepare next image is NOT finished yet, use default image.
+		Ti.API.warn('[imageManager]getNext was calling, but we do NOT have finished to parepare next image. Use default.');
 		if (!_imageDataCurrent.isDefault) {
 			_dataManager.setAsDisplayed(_imageDataCurrent);
 		}

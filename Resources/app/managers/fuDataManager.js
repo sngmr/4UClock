@@ -8,6 +8,7 @@ var RSS_FEEDS_BASE_URL = 'http://4u-beautyimg.com/rss?page=';
 var _rssLoader;
 var _lastLoadRssPageNo;
 var _noMoreUnreadRssFlag;
+var _timeoutList;
 
 /**
  * Initialize 4UDataManager
@@ -16,9 +17,13 @@ function init() {
 	_rssLoader = new (require('/app/services/RssLoader'))({ timeout: 7500 });
 	_lastLoadRssPageNo = 0;
 	_noMoreUnreadRssFlag = false;
+	_timeoutList = [];
+	
+	Ti.App.addEventListener('resume', _startLoadRss);
+	Ti.App.addEventListener('pause', _stopLoadRss);
 	
 	// Start collecting feeds
-	_startCollectRssFeedsLoop();
+	_startLoadRss();
 };
 
 /**
@@ -89,10 +94,12 @@ function getLowPriorityImageDataList() {
 	return feedModel.getLowPriorityFeedCandidates(20);
 }
 
-function _startCollectRssFeedsLoop() {
+function _startLoadRss(resumeEvent) {
+	Ti.API.info('[4uDataManager]Start load RSS. time = ' + (new Date()));
+	
 	// Check network connectivity
 	if (!Ti.Network.online) {
-		Ti.API.warn('[fuDataManager]Network is down.');
+		Ti.API.warn('[4uDataManager]Network is down.');
 		return;
 	}
 		
@@ -102,15 +109,22 @@ function _startCollectRssFeedsLoop() {
 	var feedModel = new (require('/app/models/Feed'))();
 	var feedsCount = feedModel.availableFeedCount();
 	if (feedsCount >= 3000 && _noMoreUnreadRssFlag) {
+		Ti.API.info('[4uDataManager]No more unsaved RSS. Stop loading. Feed count = ' + feedsCount);
 		return;
 	}
 	
-	if (feedsCount <= 5) {
-		// Load RSS immediately
-		_loadRss();
-	} else {
-		// Load RSS once a 5min
-		setTimeout(_loadRss, 300000);
+	_loadRss();
+	
+	_stopLoadRss();
+	_timeoutList.push(setTimeout(_startLoadRss, 300000));
+}
+
+function _stopLoadRss(pauseEvent) {
+	while (_timeoutList.length) {
+		clearTimeout(_timeoutList.pop());
+	}
+	if (pauseEvent) {
+		Ti.API.info('[4uDataManager]Pause called. time = ' + (new Date()));
 	}
 }
 
@@ -136,16 +150,13 @@ function _loadRss() {
 					break;
 				}
 			}
-			
-			_startCollectRssFeedsLoop();
 		},
 		error: function(errorMessage) {
-			Ti.API.error('[fuDataManager]Failed load RSS. errorMessage = ' + errorMessage);
+			Ti.API.error('[4uDataManager]Failed load RSS. errorMessage = ' + errorMessage);
 			_lastLoadRssPageNo--;
-			_startCollectRssFeedsLoop();
 		},
 	});
-	Ti.API.info('[fuDataManager]Loading RSS start. url = ' + url);
+	Ti.API.info('[4uDataManager]Loading RSS start. url = ' + url);
 }
 
 // Export
