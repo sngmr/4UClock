@@ -16,6 +16,23 @@ function main() {
 	// Let's roll
 	var win = new (require('/app/views/ClockWindow'))();
 	win.open();
+	
+	// Welcome message
+	_showWelcome();
+}
+
+function _showWelcome() {
+	if (Ti.App.Properties.hasProperty('launchflag') && Ti.App.Properties.getBool('launchflag')) {
+		return;
+	}
+	
+	var alertDialog = Ti.UI.createAlertDialog({
+		title: L('welcome_alert_title'),
+		message: L('welcome_alert_message'),
+	});
+	alertDialog.show();
+	
+	Ti.App.Properties.setBool('launchflag', true);
 }
 
 // Export
