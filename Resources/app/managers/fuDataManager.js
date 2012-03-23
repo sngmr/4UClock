@@ -3,8 +3,7 @@
  * 	This object should be acted as like a singleton model.
  * 	Don't create with new!! It cause script error!!
  */
-var RSS_FEEDS_BASE_URL = 'http://localhost:3000/rss?page=';
-// var RSS_FEEDS_BASE_URL = 'http://4u-beautyimg.com/rss?page=';
+var RSS_FEEDS_BASE_URL = 'http://4u-beautyimg.com/rss?page=';
 
 var _rssLoader;
 var _lastLoadRssPageNo;
