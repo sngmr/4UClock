@@ -11,10 +11,10 @@
     <id>jp.sngmr.4uclock</id>
     <name>4UClock</name>
     <version>1.0</version>
-    <publisher>shingo</publisher>
-    <url>http://</url>
-    <description>not specified</description>
-    <copyright>2012 by shingo</copyright>
+    <publisher>sngmr</publisher>
+    <url>http://d.hatena.ne.jp/sngmr</url>
+    <description>Falling love every minutes.</description>
+    <copyright>2012 by sngmr</copyright>
     <icon>appicon.png</icon>
     <persistent-wifi>false</persistent-wifi>
     <prerendered-icon>false</prerendered-icon>
