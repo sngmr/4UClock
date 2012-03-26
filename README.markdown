@@ -4,6 +4,7 @@
 What's this app?
 ----------------
 Welcome to 4UClock.
+
 This application is showing beauties once a minutes from "4u beauty image bookmarking" (<http://4u-beautyimg.com/>) for iPhone, iPad.
 
 Function
@@ -13,7 +14,7 @@ Function
 
 How to compile
 --------------
-This application made for Titanium Mobile. You need to install it on your OSX via http://www.appcelerator.com .
+This application made for Titanium Mobile. You need to install it on your OSX via http://www.appcelerator.com, and prepare for iOS application development, like install Xcode, etc.
 
 How to clone
 ------------
@@ -29,6 +30,13 @@ Clone submodules. This projects require "jasmin-titanium" and "jasmine".
     cd Resources/vendor/jasmine-titanium/
     git submodule init
     git submodule update
+    
+How to run unit test
+--------------------
+Run terminal and execute command below.
+
+    cd (ProjectFolder)/Resources
+    ./specs.py
 
 License
 -------
