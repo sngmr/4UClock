@@ -1,6 +1,8 @@
 /**
  * Clock Window
  */
+var WARNING_IMAGE_WIDTH = 19;
+
 // UI components
 var _window, _imageViews, _clockLabel, _emergencyView, _emergencyClockLabel;
 
@@ -16,7 +18,7 @@ function ClockWindow() {
 	_buildView();
 	
 	// Add event listener to view components and etc...
-	_window.addEventListener('click', _toggleEmergencyMode);
+	_window.addEventListener('swipe', _toggleEmergencyMode);
 	Ti.Gesture.addEventListener('orientationchange', _adjustEmergencyModeWhenRotate);
 	
 	// create helper
@@ -81,29 +83,37 @@ function _buildView() {
 	
 	// Emergency view
 	_emergencyView = Ti.UI.createView({
-		top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19,	// 19 is for warningImage
-		width: '100%',
-		height: Ti.Platform.displayCaps.getPlatformHeight() + 19,
+		top: 0,
+		left: -9999,
+		width: Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2,
+		height: Ti.Platform.displayCaps.getPlatformHeight(),
 		backgroundColor: '#000000',
 	});
 	_emergencyClockLabel = Ti.UI.createLabel({
 		text: '',
 		textAlign: 'center',
 		top: 0,
-		width: '100%',
+		width: Ti.Platform.displayCaps.getPlatformWidth(),
 		height: Ti.Platform.displayCaps.getPlatformHeight(),
 		color: '#FFFFFF',
 		font: { fontWeight: 'bold', fontSize: 72 },
 		opacity: 0.35,
 	});
-	var warningImage = Ti.UI.createImageView({
+	var warningImage1 = Ti.UI.createImageView({
 		image: '/images/warning.png',
-		bottom: 0,
-		width: 1024,
-		height: 19,
+		width: WARNING_IMAGE_WIDTH,
+		height: 1024,
+		left: 0,
+	});
+	var warningImage2 = Ti.UI.createImageView({
+		image: '/images/warning.png',
+		width: WARNING_IMAGE_WIDTH,
+		height: 1024,
+		right: 0,
 	});
 	_emergencyView.add(_emergencyClockLabel);
-	_emergencyView.add(warningImage);
+	_emergencyView.add(warningImage1);
+	_emergencyView.add(warningImage2);
 	
 	_window.add(_emergencyView);
 }
@@ -133,21 +143,30 @@ function _toggleEmergencyMode(event) {
 	_emergencyView.animate();
 	
 	if (_isEmergencyMode) {
-		// 19 is for height of "warning.png". Want to hide warning.png after animation
-		_emergencyView.animate(
-			{ top: 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19, duration: 1000 }
-		);
+		// To normal mode
+		if (event.direction === 'left') {
+			_emergencyView.animate({ left: 0 - (Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2), duration: 1000 });
+		} else {
+			_emergencyView.animate({ left: Ti.Platform.displayCaps.getPlatformWidth(), duration: 1000 });
+		} 
 	} else {
-		_emergencyView.animate({ top: 0, duration: 250 });
+		// To emergency mode
+		if (event.direction === 'left') {
+			_emergencyView.left = Ti.Platform.displayCaps.getPlatformWidth();
+		} else {
+			_emergencyView.left = 0 - (Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2);
+		}
+		_emergencyView.animate({ left: 0 - WARNING_IMAGE_WIDTH, duration: 250 });
 	}
 	_isEmergencyMode = !_isEmergencyMode;
 }
 
 function _adjustEmergencyModeWhenRotate(event) {
-	_emergencyView.height = Ti.Platform.displayCaps.getPlatformHeight() + 19;
+	_emergencyView.width = Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2;
+	_emergencyView.height = Ti.Platform.displayCaps.getPlatformHeight();
 	_emergencyClockLabel.height = Ti.Platform.displayCaps.getPlatformHeight();
 	if (!_isEmergencyMode) {
-		_emergencyView.top = 0 - Ti.Platform.displayCaps.getPlatformHeight() - 19;
+		_emergencyView.left = -9999;
 	}
 }
 
