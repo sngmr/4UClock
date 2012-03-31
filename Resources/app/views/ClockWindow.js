@@ -145,9 +145,9 @@ function _toggleEmergencyMode(event) {
 	if (_isEmergencyMode) {
 		// To normal mode
 		if (event.direction === 'left') {
-			_emergencyView.animate({ left: 0 - (Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2), duration: 1000 });
+			_emergencyView.animate({ left: 0 - (Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2), duration: 200 });
 		} else {
-			_emergencyView.animate({ left: Ti.Platform.displayCaps.getPlatformWidth(), duration: 1000 });
+			_emergencyView.animate({ left: Ti.Platform.displayCaps.getPlatformWidth(), duration: 200 });
 		} 
 	} else {
 		// To emergency mode
@@ -156,7 +156,7 @@ function _toggleEmergencyMode(event) {
 		} else {
 			_emergencyView.left = 0 - (Ti.Platform.displayCaps.getPlatformWidth() + WARNING_IMAGE_WIDTH * 2);
 		}
-		_emergencyView.animate({ left: 0 - WARNING_IMAGE_WIDTH, duration: 250 });
+		_emergencyView.animate({ left: 0 - WARNING_IMAGE_WIDTH, duration: 200 });
 	}
 	_isEmergencyMode = !_isEmergencyMode;
 }
