@@ -4,21 +4,24 @@
 var WARNING_IMAGE_WIDTH = 19;
 
 // UI components
-var _window, _imageViews, _clockLabel, _emergencyView, _emergencyClockLabel;
+var _window, _imageViews, _clockLabel, _hooter, _emergencyView, _emergencyClockLabel;
 
 var _helper;
 var _imageSwitchCounter;
 var _isEmergencyMode;
+var _isShowingToolbar;
 
 function ClockWindow() {
 	_imageSwitchCounter = 0;
 	_isEmergencyMode = false;
+	_isShowingToolbar = false;
 	
 	// build view
 	_buildView();
 	
 	// Add event listener to view components and etc...
 	_window.addEventListener('swipe', _toggleEmergencyMode);
+	_window.addEventListener('singletap', _toggleToolBar);
 	Ti.Gesture.addEventListener('orientationchange', _adjustEmergencyModeWhenRotate);
 	
 	// create helper
@@ -80,6 +83,30 @@ function _buildView() {
 	imageViewContainer.add(header);
 	
 	_window.add(imageViewContainer);
+	
+	// Hooter
+	var actionButton = Ti.UI.createButton({
+		systemButton: Ti.UI.iPhone.SystemButton.ACTION,
+	});
+	var spacer = Ti.UI.createButton({
+		systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE,
+	});
+	var infoButton = Ti.UI.createButton({
+		systemButton: Ti.UI.iPhone.SystemButton.INFO_LIGHT,
+	});
+	
+	_hooter = Ti.UI.iOS.createToolbar({
+		items: [actionButton, spacer, infoButton],
+		bottom: -9999,
+		borderTop: false,
+		borderBottom: false,
+		translucent: true,
+		opacity: 0.6,
+		barColor: '#000000',
+    });
+	_hooter.bottom = 0 - _hooter.height;
+	
+	_window.add(_hooter);
 	
 	// Emergency view
 	_emergencyView = Ti.UI.createView({
@@ -159,6 +186,15 @@ function _toggleEmergencyMode(event) {
 		_emergencyView.animate({ left: 0 - WARNING_IMAGE_WIDTH, duration: 200 });
 	}
 	_isEmergencyMode = !_isEmergencyMode;
+}
+
+function _toggleToolBar(event) {
+	if (_isShowingToolbar) {
+		_hooter.animate({ bottom: 0 - _hooter.height, duration: 500 });
+	} else {
+		_hooter.animate({ bottom: 0, duration: 500 });
+	}
+	_isShowingToolbar = !_isShowingToolbar;
 }
 
 function _adjustEmergencyModeWhenRotate(event) {
