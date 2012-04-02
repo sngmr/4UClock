@@ -4,17 +4,19 @@
 var WARNING_IMAGE_WIDTH = 19;
 
 // UI components
-var _window, _imageViews, _clockLabel, _hooter, _emergencyView, _emergencyClockLabel;
+var _window, _imageViewContainer, _imageViews, _clockLabel, _hooter, _emergencyView, _emergencyClockLabel;
 
 var _helper;
 var _imageSwitchCounter;
 var _isEmergencyMode;
 var _isShowingToolbar;
+var _currentImageData;
 
 function ClockWindow() {
 	_imageSwitchCounter = 0;
 	_isEmergencyMode = false;
 	_isShowingToolbar = false;
+	_currentImageData = null;
 	
 	// build view
 	_buildView();
@@ -42,7 +44,7 @@ function _buildView() {
 	});
 	
 	// Image container
-	var imageViewContainer = Ti.UI.createView({
+	_imageViewContainer = Ti.UI.createView({
 		top: 0,
 		left: 0,
 		width: '100%',
@@ -59,8 +61,8 @@ function _buildView() {
 			opacity: 0,
 		}));
 	}
-	imageViewContainer.add(_imageViews[0]);
-	imageViewContainer.add(_imageViews[1]);
+	_imageViewContainer.add(_imageViews[0]);
+	_imageViewContainer.add(_imageViews[1]);
 	
 	// Header
 	var header = Ti.UI.createView({
@@ -80,21 +82,22 @@ function _buildView() {
 		opacity: 1,
 	});
 	header.add(_clockLabel);
-	imageViewContainer.add(header);
+	_imageViewContainer.add(header);
 	
-	_window.add(imageViewContainer);
+	_window.add(_imageViewContainer);
 	
 	// Hooter
 	var actionButton = Ti.UI.createButton({
 		systemButton: Ti.UI.iPhone.SystemButton.ACTION,
 	});
+	actionButton.addEventListener('click', _actionButtonClickHandler);
 	var spacer = Ti.UI.createButton({
 		systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE,
 	});
 	var infoButton = Ti.UI.createButton({
 		systemButton: Ti.UI.iPhone.SystemButton.INFO_LIGHT,
 	});
-	
+	infoButton.addEventListener('click', _infoButtonClickHandler);
 	_hooter = Ti.UI.iOS.createToolbar({
 		items: [actionButton, spacer, infoButton],
 		bottom: -9999,
@@ -102,7 +105,7 @@ function _buildView() {
 		borderBottom: false,
 		translucent: true,
 		opacity: 0.6,
-		barColor: '#000000',
+		barColor: '#666666',
     });
 	_hooter.bottom = 0 - _hooter.height;
 	
@@ -152,17 +155,19 @@ function _setClock(clockString) {
 }
 
 // Call by helper
-function _setImage(imageFilePath) {
+function _setImage(imageData) {
 	// Detect which image view is currently showing
 	var currentImageView = _imageViews[_imageSwitchCounter % 2];
 	_imageSwitchCounter++;
 	var nextImageView = _imageViews[_imageSwitchCounter % 2];
 	
-	nextImageView.setImage(imageFilePath);
+	nextImageView.setImage(imageData.imageFilePath);
 	
 	// Change image animation
 	currentImageView.animate({ opacity: 0, duration: 750 });
 	nextImageView.animate({ opacity: 1, duration: 750 });
+	
+	_currentImageData = imageData;
 }
 
 function _toggleEmergencyMode(event) {
@@ -189,12 +194,61 @@ function _toggleEmergencyMode(event) {
 }
 
 function _toggleToolBar(event) {
+	if (_isEmergencyMode) {
+		return;
+	}
+	
 	if (_isShowingToolbar) {
-		_hooter.animate({ bottom: 0 - _hooter.height, duration: 500 });
+		_hooter.animate({ bottom: 0 - _hooter.height, duration: 250 });
 	} else {
-		_hooter.animate({ bottom: 0, duration: 500 });
+		_hooter.animate({ bottom: 0, duration: 250 });
 	}
 	_isShowingToolbar = !_isShowingToolbar;
+}
+
+function _actionButtonClickHandler(event) {
+	if (!_currentImageData) {
+		return;
+	}
+	
+	var options = [];
+	if (_currentImageData.imageFilePath) {
+		options.push(L('save_image'));
+	}
+	if (_currentImageData.link) {
+		options.push(L('open_safari'));
+	}
+	if (options.length === 0) {
+		return;
+	}
+	options.push(L('cancel'));
+	
+	var optionDialog = Ti.UI.createOptionDialog({
+		title: '',
+		options: options,
+		destructive: -1,
+		cancel: options.length - 1,
+		imageData: _currentImageData,
+		cancelButtonIndex: options.length - 1,
+	});
+	optionDialog.addEventListener('click', _optionDialogClickHandler);
+	optionDialog.show();
+}
+
+function _optionDialogClickHandler(event) {
+	if (event.index === event.source.cancelButtonIndex) {
+		return;
+	} else if (event.index === 0) {
+		// Save image file
+		Ti.Media.saveToPhotoGallery(Ti.Filesystem.getFile(event.source.imageData.imageFilePath));
+	} else if (event.index === 1) {
+		// Open 4U in safari
+		Ti.Platform.openURL(event.source.imageData.link);
+	}
+}
+
+function _infoButtonClickHandler(event) {
+	Ti.API.info(event.type);
 }
 
 function _adjustEmergencyModeWhenRotate(event) {

@@ -57,8 +57,12 @@ function _changeClock() {
 
 function _changeImage() {
 	var imageFileData = _imageManager.getNext();
-	_fromView.setImage(
-		Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath);
+	var data = {
+		imageFilePath: Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath,
+		link: imageFileData.link,
+	};
+	
+	_fromView.setImage(data);
 }
 
 // Export
