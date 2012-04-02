@@ -4,7 +4,7 @@
 var WARNING_IMAGE_WIDTH = 19;
 
 // UI components
-var _window, _imageViewContainer, _imageViews, _clockLabel, _hooter, _emergencyView, _emergencyClockLabel;
+var _window, _imageViewContainer, _imageViews, _clockLabel, _footer, _emergencyView, _emergencyClockLabel;
 
 var _helper;
 var _imageSwitchCounter;
@@ -59,6 +59,7 @@ function _buildView() {
 			height: '100%',
 			backgroundColor: '#000000',
 			opacity: 0,
+			preventDefaultImage: true,
 		}));
 	}
 	_imageViewContainer.add(_imageViews[0]);
@@ -86,7 +87,7 @@ function _buildView() {
 	
 	_window.add(_imageViewContainer);
 	
-	// Hooter
+	// Footer
 	var actionButton = Ti.UI.createButton({
 		systemButton: Ti.UI.iPhone.SystemButton.ACTION,
 	});
@@ -98,7 +99,7 @@ function _buildView() {
 		systemButton: Ti.UI.iPhone.SystemButton.INFO_LIGHT,
 	});
 	infoButton.addEventListener('click', _infoButtonClickHandler);
-	_hooter = Ti.UI.iOS.createToolbar({
+	_footer = Ti.UI.iOS.createToolbar({
 		items: [actionButton, spacer, infoButton],
 		bottom: -9999,
 		borderTop: false,
@@ -107,9 +108,9 @@ function _buildView() {
 		opacity: 0.6,
 		barColor: '#666666',
     });
-	_hooter.bottom = 0 - _hooter.height;
+	_footer.bottom = 0 - _footer.height;
 	
-	_window.add(_hooter);
+	_window.add(_footer);
 	
 	// Emergency view
 	_emergencyView = Ti.UI.createView({
@@ -199,9 +200,9 @@ function _toggleToolBar(event) {
 	}
 	
 	if (_isShowingToolbar) {
-		_hooter.animate({ bottom: 0 - _hooter.height, duration: 250 });
+		_footer.animate({ bottom: 0 - _footer.height, duration: 250 });
 	} else {
-		_hooter.animate({ bottom: 0, duration: 250 });
+		_footer.animate({ bottom: 0, duration: 250 });
 	}
 	_isShowingToolbar = !_isShowingToolbar;
 }
@@ -248,7 +249,8 @@ function _optionDialogClickHandler(event) {
 }
 
 function _infoButtonClickHandler(event) {
-	Ti.API.info(event.type);
+	var infoWindow = new (require('/app/views/InformationWindow'))();
+	infoWindow.open(infoWindow.createOpenAnimation());
 }
 
 function _adjustEmergencyModeWhenRotate(event) {

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-	<string name="welcome_alert_title">4UClockへようこそ</string>
-	<string name="welcome_alert_message">\n1分に1回、美女との一期一会を楽しむアプリです。\n\nもし上司や恋人が来た場合、画面をスワイプするだけで、ただの時計に早変わりします。</string>
 	<string name="save_image">この写真を保存</string>
 	<string name="open_safari">4UをSafariで開く</string>
 	<string name="cancel">キャンセル</string>
+	<string name="close">閉じる</string>
 </resources>

@@ -18,21 +18,18 @@ function main() {
 	win.open();
 	
 	// Welcome message
-	_showWelcome();
+	setTimeout(_showWelcome, 750);
 }
 
 function _showWelcome() {
 	if (Ti.App.Properties.hasProperty('launchflag') && Ti.App.Properties.getBool('launchflag')) {
 		return;
+	} else {
+		Ti.App.Properties.setBool('launchflag', true);
 	}
 	
-	var alertDialog = Ti.UI.createAlertDialog({
-		title: L('welcome_alert_title'),
-		message: L('welcome_alert_message'),
-	});
-	alertDialog.show();
-	
-	Ti.App.Properties.setBool('launchflag', true);
+	var infoWindow = new (require('/app/views/InformationWindow'))();
+	infoWindow.open(infoWindow.createOpenAnimation());
 }
 
 // Export

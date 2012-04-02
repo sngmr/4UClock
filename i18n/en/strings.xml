@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-	<string name="welcome_alert_title">Welcome 4UClock</string>
-	<string name="welcome_alert_message">\nThis app is showing beauties once a minutes.\n\nIf you notice your boss, girls you like and wife is coming, just swipe screen. As soon as this app change to be a normal clock!!</string>
 	<string name="save_image">Save Beauty</string>
 	<string name="open_safari">Open 4U in Safari</string>
 	<string name="cancel">Cancel</string>
+	<string name="close">Close</string>
 </resources>
