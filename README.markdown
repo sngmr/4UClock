@@ -12,7 +12,7 @@ This application is showing beauties once a minutes from "4u beauty image bookma
 Function
 ---------------------
 + Showing Japanese beauties (not every, but almost!!) 
-+ Swipe the screen, execute "Emergency Mode" I named. If you notice thata your boss, girl you like and wife is coming in. No worries. Just swipe the screen, as soon as this app change screen to just showing clock. Swipe again, start showing beauties, again.
++ Swipe the screen, execute "Emergency Mode" I named. If you notice that your boss, girl you like and wife is coming in. No worries. Just swipe the screen, as soon as this app change screen to just showing clock. Swipe again, start showing beauties, again.
 
 How to compile
 --------------
