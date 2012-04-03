@@ -7,6 +7,8 @@ Welcome to 4UClock.
 
 This application is showing beauties once a minutes from "4u beauty image bookmarking" (<http://4u-beautyimg.com/>) for iPhone, iPad.
 
+![ScreenShot](https://github.com/sngmr/4UClock/raw/master/_assets/github_images/screenshot.png)
+
 Function
 ---------------------
 + Showing Japanese beauties (not every, but almost!!) 
