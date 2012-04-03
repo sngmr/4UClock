@@ -37,6 +37,8 @@ Run terminal and execute command below.
 
     cd (ProjectFolder)/Resources
     ./specs.py
+    
+**Sorry, unit test code is under construction :P**
 
 License
 -------
