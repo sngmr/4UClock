@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>4uclock by sngmr</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/sngmr/4UClock">Fork On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/sngmr/4UClock/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/sngmr/4UClock/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>4uclock</h1>
+          <p></p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/sngmr">sngmr</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h2>What's this app?</h2>
+
+<p>Welcome to 4UClock.</p>
+
+<p>This application is showing beauties once a minutes from "4u beauty image bookmarking" (<a href="http://4u-beautyimg.com/">http://4u-beautyimg.com/</a>) for iPhone, iPad.
+It's kind of RSS leader specialized for 4U.</p>
+
+<p><img src="https://github.com/sngmr/4UClock/raw/master/_assets/github_images/screenshot.png" alt="ScreenShot"></p>
+
+<h2>Function</h2>
+
+<ul>
+<li>Showing Japanese beauties (not every, but almost!! Depend on 4U RSS feeds) </li>
+<li>Swipe the screen, execute "Emergency Mode". If you notice that your boss, girl you like and wife is coming in. No worries. Just swipe the screen, as soon as this app change screen to just showing clock. Swipe again, start showing beauties, again.</li>
+</ul><h2>How to compile</h2>
+
+<p>This application made for Titanium Mobile. You need to install it on your OSX via <a href="http://www.appcelerator.com">http://www.appcelerator.com</a>, and prepare for iOS application development, like install Xcode, etc.</p>
+
+<h2>How to clone</h2>
+
+<p>Clone this project</p>
+
+<pre><code>git clone git@github.com:sngmr/4UClock.git
+</code></pre>
+
+<p>Clone submodules. This projects require "jasmin-titanium" and "jasmine".
+If you don't need UnitTest components, skip this section and follow guidance next section.</p>
+
+<pre><code>cd (ProjectFolder)
+git submodule init
+git submodule update
+cd Resources/vendor/jasmine-titanium/
+git submodule init
+git submodule update
+</code></pre>
+
+<h2>How to run unit test</h2>
+
+<p>Run terminal and execute command below.</p>
+
+<pre><code>cd (ProjectFolder)/Resources
+./specs.py
+</code></pre>
+
+<p><strong>Sorry, unit test code is under construction :P</strong></p>
+
+<p>If you don't need UnitTest components, delete as below.</p>
+
+<pre><code>cd (ProjectFolder)
+rm specs.py
+rm -fR spec
+rm -fR vendor
+</code></pre>
+
+<h2>License</h2>
+
+<p>Check "LICENSE.txt"</p>
+
+<h2>Developer</h2>
+
+<p><a href="http://twitter.com/sngmr">@sngmr</a>(<a href="http://d.hatena.ne.jp/sngmr">http://d.hatena.ne.jp/sngmr</a>)</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
