@@ -27,7 +27,7 @@ function init(dataManager) {
 	_fileDownloader = new (require('/app/services/FileDownloader'))({ timeout: 15000 });
 	
 	// Copy default image file to cache directory
-	_copyDefaultImageToCache();
+	// _copyDefaultImageToCache();
 };
 
 /**
