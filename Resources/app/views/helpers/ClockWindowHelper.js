@@ -56,12 +56,17 @@ function _changeClock() {
 }
 
 function _changeImage() {
+	var data = null;
 	var imageFileData = _imageManager.getNext();
-	var data = {
-		imageFilePath: Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath,
-		link: imageFileData.link,
-	};
-	
+	if (imageFileData) {
+		data = {
+			imageFilePath: Ti.Filesystem.getFile(_imageManager.IMAGE_FILE_DIR_NAME, imageFileData.image_file_name).nativePath,
+			link: imageFileData.link,
+		};
+	} else {
+		// Try again
+		setTimeout(_changeImage, 1500);
+	}
 	_fromView.setImage(data);
 }
 

@@ -4,7 +4,7 @@
 var WARNING_IMAGE_WIDTH = 19;
 
 // UI components
-var _window, _imageViewContainer, _imageViews, _clockLabel, _footer, _emergencyView, _emergencyClockLabel;
+var _window, _imageViewContainer, _imageViews, _clockLabel, _footer, _emergencyView, _emergencyClockLabel, _loading;
 
 var _helper;
 var _imageSwitchCounter;
@@ -85,6 +85,16 @@ function _buildView() {
 	header.add(_clockLabel);
 	_imageViewContainer.add(header);
 	
+	// Loading
+	_loading = Ti.UI.createActivityIndicator({
+		style: Ti.UI.iPhone.ActivityIndicatorStyle.BIG,
+		width: 20,
+		height: 20,
+		top: Ti.Platform.displayCaps.getPlatformHeight() / 2 - 10,
+		left: Ti.Platform.displayCaps.getPlatformWidth() / 2 - 10,
+	});
+	_imageViewContainer.add(_loading);
+	
 	_window.add(_imageViewContainer);
 	
 	// Footer
@@ -157,6 +167,15 @@ function _setClock(clockString) {
 
 // Call by helper
 function _setImage(imageData) {
+	// If imageData is unset, show loading image.
+	if (!imageData) {
+		_loading.show();
+		_currentImageData = null;
+		return;
+	} else {
+		_loading.hide();
+	}
+	
 	// Detect which image view is currently showing
 	var currentImageView = _imageViews[_imageSwitchCounter % 2];
 	_imageSwitchCounter++;

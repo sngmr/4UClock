@@ -7,8 +7,6 @@
 // HACK: Change normal application data directory to other for follow apple's save file guidelines of iCloud
 var IMAGE_FILE_DIR_NAME = 
 	Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, '../Library/Caches/Images/').nativePath;
-var DEFAULT_IMAGE_FILE_DIR_NAME = 
-	Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, 'images', 'defaults').nativePath;
 var MAX_CACHED_IMAGE_FILE_COUNT = 70;
 
 var _common;
@@ -26,34 +24,36 @@ function init(dataManager) {
 	_dataManager = dataManager;
 	_fileDownloader = new (require('/app/services/FileDownloader'))({ timeout: 15000 });
 	
-	// Copy default image file to cache directory
-	// _copyDefaultImageToCache();
+	// Create image cache directory if it's not exists
+	var imageDir = Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME);
+	if (!imageDir.exists()) {
+		imageDir.createDirectory();
+	}
 };
 
 /**
  * Return next image data
- * @return {object} Next image data
+ * @return {object} Next image data, Should think about null.
  */
 function getNext() {
 	Ti.API.info('[imageManager]getNext start. ' + (new Date()));
-	if (!_imageDataNext && !_imageDataNext) {
-		// First launch. Use default image for showing beauty as soon as possible.
-		_imageDataCurrent = _getDefaultImageData();
-	} else if (!_imageDataNext) {
+	if (!_imageDataNext) {
 		// If prepare next image is NOT finished yet, use default image.
-		Ti.API.warn('[imageManager]getNext was calling, but we do NOT have finished to parepare next image. Use default.');
-		if (!_imageDataCurrent.isDefault) {
+		Ti.API.warn('[imageManager]getNext was calling, but we do NOT have finished to parepare next image yet. Use default.');
+		if (_imageDataCurrent && !_imageDataCurrent.isDefault) {
 			_dataManager.setAsDisplayed(_imageDataCurrent);
 		}
 		_imageDataCurrent = _getDefaultImageData();
 	} else {
-		// Tell _dataManager, current image file is displayed.
-		_dataManager.setAsDisplayed(_imageDataCurrent);
+		if (_imageDataCurrent) {
+			// Tell _dataManager, current image file is displayed.
+			_dataManager.setAsDisplayed(_imageDataCurrent);
+			
+			// Delete cache image file
+			_sortCacheImageFileCount();
+		}
 		_imageDataCurrent = _imageDataNext;
 	}
-	
-	// Delete cache image file
-	_adjustCacheImageFileCount();
 	
 	// Prepare next image
 	_prepareNextImage();
@@ -143,33 +143,13 @@ function _download(imageData) {
 	Ti.API.info('[imageManager]File download start. url = ' + url);
 }
 
-function _copyDefaultImageToCache() {
-	var imageDir = Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME);
-	if (!imageDir.exists()) {
-		imageDir.createDirectory();
-	}
-	
-	// List default image files
-	var imageFile;
-	var imageSourceFile;
-	var defaultImageFiles = Ti.Filesystem.getFile(DEFAULT_IMAGE_FILE_DIR_NAME).getDirectoryListing();
-	for (var i = 0, len = defaultImageFiles.length; i < len; i++) {
-		imageFile = Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME, defaultImageFiles[i]);
-		if (!imageFile.exists()) {
-			imageSourceFile = Ti.Filesystem.getFile(DEFAULT_IMAGE_FILE_DIR_NAME, defaultImageFiles[i]);
-			if (imageSourceFile.exists()) {
-				imageFile.write(imageSourceFile.read());
-			}
-		}
-		imageSourceFile = null;
-		imageFile = null;
-	}
-}
-
 function _getDefaultImageData() {
 	// Search image cache directory to use default image file.
-	// At least, there are default files exist
 	var cacheImageFiles = Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME).getDirectoryListing();
+	if (!cacheImageFiles || cacheImageFiles.length === 0) {
+		return null;
+	}
+	
 	var useImageFileName = cacheImageFiles[Math.floor(Math.random() * cacheImageFiles.length)];
 	var useImageFileNameFullPath = Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME, useImageFileName).nativePath;
 	
@@ -199,11 +179,12 @@ function _getImageFileInfo(imageFileName) {
 	return imageFileInfo;
 }
 
-function _adjustCacheImageFileCount() {
+function _sortCacheImageFileCount() {
 	var imageData, imageFile;
 	
 	// If remain cache image file count is less than define count, do nothing
-	if (Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME).getDirectoryListing().length <= MAX_CACHED_IMAGE_FILE_COUNT) {
+	var cacheImageFiles = Ti.Filesystem.getFile(IMAGE_FILE_DIR_NAME).getDirectoryListing();
+	if (!cacheImageFiles || cacheImageFiles.length <= MAX_CACHED_IMAGE_FILE_COUNT) {
 		return;
 	}
 	
