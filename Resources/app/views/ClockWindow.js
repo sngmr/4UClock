@@ -2,6 +2,7 @@
  * Clock Window
  */
 var WARNING_IMAGE_WIDTH = 19;
+var TOOLBAR_HEIGHT = 44;
 
 // UI components
 var _window, _imageViewContainer, _imageViews, _clockLabel, _footer, _emergencyView, _emergencyClockLabel, _loading;
@@ -47,16 +48,16 @@ function _buildView() {
 	_imageViewContainer = Ti.UI.createView({
 		top: 0,
 		left: 0,
-		width: '100%',
-		height: '100%',
+		width: Ti.UI.FILL,
+		height: Ti.UI.FILL
 	});
 	
 	// Image views
 	_imageViews = [];
 	for (var i = 0; i < 2; i++) {
 		_imageViews.push(Ti.UI.createImageView({
-			width: '100%',
-			height: '100%',
+			width: Ti.UI.FILL,
+			height: Ti.UI.FILL,
 			backgroundColor: '#000000',
 			opacity: 0,
 			preventDefaultImage: true,
@@ -67,8 +68,8 @@ function _buildView() {
 	
 	// Header
 	var header = Ti.UI.createView({
-		width: '100%',
-		height: 'auto',
+		width: Ti.UI.FILL,
+		height: Ti.UI.SIZE,
 		top: 0,
 		backgroundColor: '#000000',
 		opacity: 0.45,
@@ -76,8 +77,8 @@ function _buildView() {
 	_clockLabel = Ti.UI.createLabel({
 		text: '',
 		textAlign: 'center',
-		width: '100%',
-		height: 'auto',
+		width: Ti.UI.FILL,
+		height: Ti.UI.SIZE,
 		color: '#FFFFFF',
 		font: { fontWeight: 'bold', fontSize: 32 },
 		opacity: 1,
@@ -118,7 +119,7 @@ function _buildView() {
 		opacity: 0.6,
 		barColor: '#666666',
     });
-	_footer.bottom = 0 - _footer.height;
+	_footer.bottom = 0 - TOOLBAR_HEIGHT;
 	
 	_window.add(_footer);
 	
@@ -219,7 +220,7 @@ function _toggleToolBar(event) {
 	}
 	
 	if (_isShowingToolbar) {
-		_footer.animate({ bottom: 0 - _footer.height, duration: 250 });
+		_footer.animate({ bottom: 0 - TOOLBAR_HEIGHT, duration: 250 });
 	} else {
 		_footer.animate({ bottom: 0, duration: 250 });
 	}
