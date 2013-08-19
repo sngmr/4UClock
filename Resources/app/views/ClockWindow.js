@@ -48,16 +48,12 @@ function _buildView() {
 	_imageViewContainer = Ti.UI.createView({
 		top: 0,
 		left: 0,
-		width: Ti.UI.FILL,
-		height: Ti.UI.FILL
 	});
 	
 	// Image views
 	_imageViews = [];
 	for (var i = 0; i < 2; i++) {
 		_imageViews.push(Ti.UI.createImageView({
-			width: Ti.UI.FILL,
-			height: Ti.UI.FILL,
 			backgroundColor: '#000000',
 			opacity: 0,
 			preventDefaultImage: true,
