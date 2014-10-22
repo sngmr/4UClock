@@ -67,7 +67,7 @@ function _select(sql, placeHolders) {
 	var row;
 	while (rs.isValidRow()) {
 		row = {};
-		for (var i = 0, len = rs.fieldCount(); i < len; i++) {
+		for (var i = 0, len = rs.fieldCount; i < len; i++) {
 			row[rs.fieldName(i)] = rs.field(i);
 		}
 		rows.push(row);
